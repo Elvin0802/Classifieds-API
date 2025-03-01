@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{E165AF00-68E0-4084-81E8-9703BAE38015}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{59A923FF-F123-4034-92B1-54FB11CF9C1E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{D81A28B4-0D30-496C-A708-51BB68E0BEA0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{0ED999AA-1E23-48BB-92CA-61BD748DEAED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedsApp.Application", "Application\ClassifiedsApp.Application\ClassifiedsApp.Application.csproj", "{854080C5-0122-401D-B0A1-DEEE75A5EFE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedsApp.Core", "Core\ClassifiedsApp.Core\ClassifiedsApp.Core.csproj", "{359835F2-4CF9-433D-804D-DC53351A338A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedsApp.Infrastructure", "Infrastructure\ClassifiedsApp.Infrastructure\ClassifiedsApp.Infrastructure.csproj", "{E8836907-991A-42F2-B749-79A0A79F3671}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassifiedsApp.API", "API\ClassifiedsApp.API\ClassifiedsApp.API.csproj", "{EA56D55E-40D6-43FB-8C34-669AFB50AC2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0D775FCD-D088-4411-8404-FB5C10F45485}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{854080C5-0122-401D-B0A1-DEEE75A5EFE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{854080C5-0122-401D-B0A1-DEEE75A5EFE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{854080C5-0122-401D-B0A1-DEEE75A5EFE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{854080C5-0122-401D-B0A1-DEEE75A5EFE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{359835F2-4CF9-433D-804D-DC53351A338A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{359835F2-4CF9-433D-804D-DC53351A338A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{359835F2-4CF9-433D-804D-DC53351A338A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{359835F2-4CF9-433D-804D-DC53351A338A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8836907-991A-42F2-B749-79A0A79F3671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8836907-991A-42F2-B749-79A0A79F3671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8836907-991A-42F2-B749-79A0A79F3671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8836907-991A-42F2-B749-79A0A79F3671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA56D55E-40D6-43FB-8C34-669AFB50AC2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA56D55E-40D6-43FB-8C34-669AFB50AC2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA56D55E-40D6-43FB-8C34-669AFB50AC2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA56D55E-40D6-43FB-8C34-669AFB50AC2D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{854080C5-0122-401D-B0A1-DEEE75A5EFE9} = {59A923FF-F123-4034-92B1-54FB11CF9C1E}
+		{359835F2-4CF9-433D-804D-DC53351A338A} = {E165AF00-68E0-4084-81E8-9703BAE38015}
+		{E8836907-991A-42F2-B749-79A0A79F3671} = {D81A28B4-0D30-496C-A708-51BB68E0BEA0}
+		{EA56D55E-40D6-43FB-8C34-669AFB50AC2D} = {0ED999AA-1E23-48BB-92CA-61BD748DEAED}
+	EndGlobalSection
+EndGlobal
