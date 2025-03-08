@@ -1,7 +1,10 @@
-﻿namespace ClassifiedsApp.Core.Dtos.AdImages;
+﻿using ClassifiedsApp.Core.Dtos.Common;
 
-public class AdImageDto
+namespace ClassifiedsApp.Core.Dtos.AdImages;
+
+public class AdImageDto : BaseEntityDto
 {
-	public Guid Id { get; set; }
 	public string Url { get; set; }
+	public int SortOrder { get; set; } = 0;
+	public Guid AdId { get; set; }
 }

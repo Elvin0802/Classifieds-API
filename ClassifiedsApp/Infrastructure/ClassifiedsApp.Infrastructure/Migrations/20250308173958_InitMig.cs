@@ -30,7 +30,6 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 				{
 					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
 					Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-					Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
 					RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
 					RefreshTokenExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
 					CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -61,23 +60,15 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 				columns: table => new
 				{
 					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-					Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-					Slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
-					IsActive = table.Column<bool>(type: "bit", nullable: false),
-					IsSubCategory = table.Column<bool>(type: "bit", nullable: false),
-					ParentCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
 					CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
 					UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-					ArchivedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+					ArchivedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+					Slug = table.Column<string>(type: "nvarchar(max)", nullable: false)
 				},
 				constraints: table =>
 				{
 					table.PrimaryKey("PK_Categories", x => x.Id);
-					table.ForeignKey(
-						name: "FK_Categories_Categories_ParentCategoryId",
-						column: x => x.ParentCategoryId,
-						principalTable: "Categories",
-						principalColumn: "Id");
 				});
 
 			migrationBuilder.CreateTable(
@@ -203,6 +194,29 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 				});
 
 			migrationBuilder.CreateTable(
+				name: "MainCategories",
+				columns: table => new
+				{
+					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					ParentCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					ArchivedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+					Slug = table.Column<string>(type: "nvarchar(max)", nullable: false)
+				},
+				constraints: table =>
+				{
+					table.PrimaryKey("PK_MainCategories", x => x.Id);
+					table.ForeignKey(
+						name: "FK_MainCategories_Categories_ParentCategoryId",
+						column: x => x.ParentCategoryId,
+						principalTable: "Categories",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Cascade);
+				});
+
+			migrationBuilder.CreateTable(
 				name: "Ads",
 				columns: table => new
 				{
@@ -214,6 +228,7 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 					Status = table.Column<int>(type: "int", nullable: false),
 					ViewCount = table.Column<long>(type: "bigint", nullable: false),
 					CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					MainCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
 					LocationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
 					AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
 					CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -241,6 +256,38 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 						principalTable: "Locations",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Cascade);
+					table.ForeignKey(
+						name: "FK_Ads_MainCategories_MainCategoryId",
+						column: x => x.MainCategoryId,
+						principalTable: "MainCategories",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.NoAction);
+				});
+
+			migrationBuilder.CreateTable(
+				name: "SubCategories",
+				columns: table => new
+				{
+					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+					Type = table.Column<int>(type: "int", nullable: false),
+					IsRequired = table.Column<bool>(type: "bit", nullable: false),
+					IsSearchable = table.Column<bool>(type: "bit", nullable: false),
+					SortOrder = table.Column<int>(type: "int", nullable: false),
+					MainCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					ArchivedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+				},
+				constraints: table =>
+				{
+					table.PrimaryKey("PK_SubCategories", x => x.Id);
+					table.ForeignKey(
+						name: "FK_SubCategories_MainCategories_MainCategoryId",
+						column: x => x.MainCategoryId,
+						principalTable: "MainCategories",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Cascade);
 				});
 
 			migrationBuilder.CreateTable(
@@ -266,6 +313,58 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 						onDelete: ReferentialAction.Cascade);
 				});
 
+			migrationBuilder.CreateTable(
+				name: "AdSubCategoryValues",
+				columns: table => new
+				{
+					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+					AdId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					SubCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					ArchivedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+				},
+				constraints: table =>
+				{
+					table.PrimaryKey("PK_AdSubCategoryValues", x => x.Id);
+					table.ForeignKey(
+						name: "FK_AdSubCategoryValues_Ads_AdId",
+						column: x => x.AdId,
+						principalTable: "Ads",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Cascade);
+					table.ForeignKey(
+						name: "FK_AdSubCategoryValues_SubCategories_SubCategoryId",
+						column: x => x.SubCategoryId,
+						principalTable: "SubCategories",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.NoAction);
+				});
+
+			migrationBuilder.CreateTable(
+				name: "SubCategoryOptions",
+				columns: table => new
+				{
+					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+					SortOrder = table.Column<int>(type: "int", nullable: false),
+					SubCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					ArchivedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+				},
+				constraints: table =>
+				{
+					table.PrimaryKey("PK_SubCategoryOptions", x => x.Id);
+					table.ForeignKey(
+						name: "FK_SubCategoryOptions_SubCategories_SubCategoryId",
+						column: x => x.SubCategoryId,
+						principalTable: "SubCategories",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Cascade);
+				});
+
 			migrationBuilder.CreateIndex(
 				name: "IX_AdImages_AdId",
 				table: "AdImages",
@@ -285,6 +384,21 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 				name: "IX_Ads_LocationId",
 				table: "Ads",
 				column: "LocationId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_Ads_MainCategoryId",
+				table: "Ads",
+				column: "MainCategoryId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_AdSubCategoryValues_AdId",
+				table: "AdSubCategoryValues",
+				column: "AdId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_AdSubCategoryValues_SubCategoryId",
+				table: "AdSubCategoryValues",
+				column: "SubCategoryId");
 
 			migrationBuilder.CreateIndex(
 				name: "IX_AspNetRoleClaims_RoleId",
@@ -326,9 +440,19 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 				filter: "[NormalizedUserName] IS NOT NULL");
 
 			migrationBuilder.CreateIndex(
-				name: "IX_Categories_ParentCategoryId",
-				table: "Categories",
+				name: "IX_MainCategories_ParentCategoryId",
+				table: "MainCategories",
 				column: "ParentCategoryId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_SubCategories_MainCategoryId",
+				table: "SubCategories",
+				column: "MainCategoryId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_SubCategoryOptions_SubCategoryId",
+				table: "SubCategoryOptions",
+				column: "SubCategoryId");
 		}
 
 		/// <inheritdoc />
@@ -336,6 +460,9 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 		{
 			migrationBuilder.DropTable(
 				name: "AdImages");
+
+			migrationBuilder.DropTable(
+				name: "AdSubCategoryValues");
 
 			migrationBuilder.DropTable(
 				name: "AspNetRoleClaims");
@@ -353,19 +480,28 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 				name: "AspNetUserTokens");
 
 			migrationBuilder.DropTable(
+				name: "SubCategoryOptions");
+
+			migrationBuilder.DropTable(
 				name: "Ads");
 
 			migrationBuilder.DropTable(
 				name: "AspNetRoles");
 
 			migrationBuilder.DropTable(
+				name: "SubCategories");
+
+			migrationBuilder.DropTable(
 				name: "AspNetUsers");
 
 			migrationBuilder.DropTable(
-				name: "Categories");
+				name: "Locations");
 
 			migrationBuilder.DropTable(
-				name: "Locations");
+				name: "MainCategories");
+
+			migrationBuilder.DropTable(
+				name: "Categories");
 		}
 	}
 }

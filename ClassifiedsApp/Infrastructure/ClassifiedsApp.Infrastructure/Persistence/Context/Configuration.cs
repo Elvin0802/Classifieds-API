@@ -21,7 +21,7 @@ public static class Configuration
 				configurationManager.AddJsonFile("appsettings.Production.json");
 			}
 
-			return configurationManager.GetConnectionString("Default");
+			return configurationManager.GetConnectionString("Default")!;
 		}
 	}
 }

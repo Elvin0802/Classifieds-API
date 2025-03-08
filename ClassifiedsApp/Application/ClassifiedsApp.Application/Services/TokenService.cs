@@ -22,7 +22,7 @@ public class TokenService : ITokenService
 		{
 			new Claim (ClaimsIdentity.DefaultNameClaimType, email),
 			new Claim(ClaimsIdentity.DefaultRoleClaimType, string.Join(",", roles)),
-			new Claim("userId", id.ToString())
+			new Claim("UserId", id.ToString())
 		}.Concat(userClaims);
 
 		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.Secret));
@@ -42,6 +42,6 @@ public class TokenService : ITokenService
 
 	public string GenerateRefreshToken()
 	{
-		return Guid.NewGuid().ToString("N").ToLower();
+		return (Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N")).ToLower();
 	}
 }

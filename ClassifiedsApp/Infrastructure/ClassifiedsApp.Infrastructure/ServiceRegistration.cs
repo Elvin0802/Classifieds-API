@@ -30,8 +30,17 @@ public static class ServiceRegistration
 		services.AddScoped<ILocationWriteRepository, LocationWriteRepository>();
 		services.AddScoped<IAdImageReadRepository, AdImageReadRepository>();
 		services.AddScoped<IAdImageWriteRepository, AdImageWriteRepository>();
-
-
-
+		services.AddScoped<IMainCategoryReadRepository, MainCategoryReadRepository>();
+		services.AddScoped<IMainCategoryWriteRepository, MainCategoryWriteRepository>();
+		services.AddScoped<IAdSubCategoryValueReadRepository, AdSubCategoryValueReadRepository>();
+		services.AddScoped<IAdSubCategoryValueWriteRepository, AdSubCategoryValueWriteRepository>();
+		services.AddScoped<IMainCategoryReadRepository, MainCategoryReadRepository>();
+		services.AddScoped<IMainCategoryWriteRepository, MainCategoryWriteRepository>();
+		services.AddScoped<ISubCategoryReadRepository, SubCategoryReadRepository>();
+		services.AddScoped<ISubCategoryWriteRepository, SubCategoryWriteRepository>();
+		services.AddScoped<ISubCategoryOptionReadRepository, SubCategoryOptionReadRepository>();
+		services.AddScoped<ISubCategoryOptionWriteRepository, SubCategoryOptionWriteRepository>();
+		services.AddScoped<IMainCategoryReadRepository, MainCategoryReadRepository>();
+		services.AddScoped<IMainCategoryWriteRepository, MainCategoryWriteRepository>();
 	}
 }

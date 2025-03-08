@@ -1,6 +1,8 @@
-﻿namespace ClassifiedsApp.Application.Features.Commands.Locations.DeleteLocation
+﻿using MediatR;
+
+namespace ClassifiedsApp.Application.Features.Commands.Locations.DeleteLocation;
+
+public class DeleteLocationCommand : IRequest<DeleteLocationCommandResponse>
 {
-	internal class DeleteLocationCommand
-	{
-	}
+	public Guid Id { get; set; }
 }

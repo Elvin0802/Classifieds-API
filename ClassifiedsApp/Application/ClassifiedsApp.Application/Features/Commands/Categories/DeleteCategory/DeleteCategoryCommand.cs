@@ -1,6 +1,8 @@
-﻿namespace ClassifiedsApp.Application.Features.Commands.Categories.DeleteCategory
+﻿using MediatR;
+
+namespace ClassifiedsApp.Application.Features.Commands.Categories.DeleteCategory;
+
+public class DeleteCategoryCommand : IRequest<DeleteCategoryCommandResponse>
 {
-	internal class DeleteCategoryCommand
-	{
-	}
+	public Guid Id { get; set; }
 }

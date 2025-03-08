@@ -8,6 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AuthenticationAndAuthorization(builder.Configuration);
+
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
 

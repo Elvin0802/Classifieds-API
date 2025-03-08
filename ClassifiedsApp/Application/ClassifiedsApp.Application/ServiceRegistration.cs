@@ -18,5 +18,8 @@ public static class ServiceRegistration
 		services.AddValidatorsFromAssemblyContaining<LoginCommandValidator>();
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+		services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 	}
 }

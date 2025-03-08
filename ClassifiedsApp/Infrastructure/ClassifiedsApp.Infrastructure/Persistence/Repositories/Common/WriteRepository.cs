@@ -35,9 +35,9 @@ public class WriteRepository<T> : IWriteRepository<T> where T : BaseEntity
 		Table.RemoveRange(datas);
 		return true;
 	}
-	public async Task<bool> RemoveAsync(string id)
+	public async Task<bool> RemoveAsync(Guid id)
 	{
-		T? model = await Table.FirstOrDefaultAsync(data => data.Id == Guid.Parse(id));
+		T? model = await Table.FirstOrDefaultAsync(data => data.Id == id);
 		return Remove(model!);
 	}
 	public bool Update(T model)

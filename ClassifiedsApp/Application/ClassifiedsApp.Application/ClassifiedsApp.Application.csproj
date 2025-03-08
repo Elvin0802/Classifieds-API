@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Queries\Ads\GetAdsList\" />
-    <Folder Include="Features\Queries\Ads\GetAdById\" />
-    <Folder Include="Features\Queries\Categories\GetCategoryById\" />
-    <Folder Include="Features\Queries\Locations\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="AutoMapper.Collection" Version="11.0.0" />
     <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="8.0.0" />
@@ -44,6 +37,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\ClassifiedsApp.Core\ClassifiedsApp.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Commands\Categories\UpdateMainCategory\" />
   </ItemGroup>
 
 </Project>

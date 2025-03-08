@@ -2,9 +2,8 @@
 
 public enum AdStatus
 {
-	Created,
 	Pending,
-	Published,
+	Active,
 	Expired,
 	Rejected,
 	Archived,

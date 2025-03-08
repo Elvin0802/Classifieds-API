@@ -5,4 +5,5 @@ namespace ClassifiedsApp.Core.Interfaces.Repositories.Categories;
 
 public interface ICategoryReadRepository : IReadRepository<Category>
 {
+	Task<Category> GetCategoryByIdWithIncludesAsync(Guid id, bool tracking = true);
 }

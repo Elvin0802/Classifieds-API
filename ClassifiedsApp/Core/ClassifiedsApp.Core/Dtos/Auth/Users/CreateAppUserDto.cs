@@ -1,10 +1,9 @@
 ﻿namespace ClassifiedsApp.Core.Dtos.Auth.Users;
 
-public class UserDto
+public class CreateAppUserDto
 {
-	public Guid Id { get; set; }
 	public string Name { get; set; }
-	public string Surname { get; set; }
 	public string Email { get; set; }
 	public string PhoneNumber { get; set; }
+	public string Password { get; set; }
 }

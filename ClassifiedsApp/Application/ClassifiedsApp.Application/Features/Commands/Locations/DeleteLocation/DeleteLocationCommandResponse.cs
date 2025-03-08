@@ -1,6 +1,7 @@
-﻿namespace ClassifiedsApp.Application.Features.Commands.Locations.DeleteLocation
+﻿namespace ClassifiedsApp.Application.Features.Commands.Locations.DeleteLocation;
+
+public class DeleteLocationCommandResponse
 {
-	internal class DeleteLocationCommandResponse
-	{
-	}
+	public bool IsSucceeded { get; set; }
+	public string Message { get; set; }
 }

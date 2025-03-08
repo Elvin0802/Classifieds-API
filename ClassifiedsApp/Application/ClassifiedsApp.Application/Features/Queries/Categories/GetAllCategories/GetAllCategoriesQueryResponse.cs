@@ -1,10 +1,10 @@
-﻿using ClassifiedsApp.Core.Entities;
+﻿using ClassifiedsApp.Core.Dtos.Categories;
 
 namespace ClassifiedsApp.Application.Features.Queries.Categories.GetAllCategories;
 
-public class CategoryQueryResponse
+public class GetAllCategoriesQueryResponse
 {
-	public IList<Category> Items { get; set; }
+	public IList<CategoryDto>? Items { get; set; }
 	public int PageNumber { get; set; }
 	public int PageSize { get; set; }
 	public int TotalCount { get; set; }

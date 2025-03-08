@@ -1,6 +1,7 @@
-﻿namespace ClassifiedsApp.Application.Features.Commands.Ads.DeleteAd
+﻿namespace ClassifiedsApp.Application.Features.Commands.Ads.DeleteAd;
+
+public class DeleteAdCommandResponse
 {
-	internal class DeleteAdCommandResponse
-	{
-	}
+	public bool IsSucceeded { get; set; }
+	public string Message { get; set; }
 }

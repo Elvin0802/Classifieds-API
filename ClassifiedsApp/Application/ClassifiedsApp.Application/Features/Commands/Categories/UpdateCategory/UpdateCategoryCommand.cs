@@ -1,6 +1,9 @@
-﻿namespace ClassifiedsApp.Application.Features.Commands.Categories.UpdateCategory
+﻿using MediatR;
+
+namespace ClassifiedsApp.Application.Features.Commands.Categories.UpdateCategory;
+
+public class UpdateCategoryCommand : IRequest<UpdateCategoryCommandResponse>
 {
-	internal class UpdateCategoryCommand
-	{
-	}
+	public Guid Id { get; set; }
+	public string Name { get; set; }
 }

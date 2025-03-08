@@ -15,28 +15,34 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterC
 
 	public async Task<RegisterCommandResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
 	{
-		var exisitingUser = await _userManager.FindByEmailAsync(request.Email);
+		var exisitingUser = await _userManager.FindByEmailAsync(request.CreateAppUserDto.Email);
 
 		if (exisitingUser is not null) return new() { IsSucceeded = false, Message = "This user already registered." };
 
 		var user = new AppUser
 		{
-			Email = request.Email,
-			UserName = request.Email,
-			RefreshToken = Guid.NewGuid().ToString("N").ToLower(),
-			RefreshTokenExpiresAt = DateTimeOffset.UtcNow.AddHours(12),
-			Name = request.Name,
-			Surname = request.Surname,
-			PhoneNumber = request.PhoneNumber,
+			Email = request.CreateAppUserDto.Email,
+			UserName = request.CreateAppUserDto.Email, // gelecekde Phone number et ki , username login mumkun olsun.
+			Name = request.CreateAppUserDto.Name,
+			PhoneNumber = request.CreateAppUserDto.PhoneNumber,
 			CreatedAt = DateTimeOffset.UtcNow,
 			UpdatedAt = DateTimeOffset.UtcNow,
 			ArchivedAt = DateTimeOffset.MinValue
 		};
 
-		var result = await _userManager.CreateAsync(user, request.Password);
+		var result = await _userManager.CreateAsync(user, request.CreateAppUserDto.Password);
 
-		if (!result.Succeeded) return new() { IsSucceeded = false, Message = "User not registered." };
+		if (!result.Succeeded)
+			return new()
+			{
+				IsSucceeded = false,
+				Message = $"User not registered.  {string.Join(" |-------| ", result.Errors.Select(e => e.Description))}"
+			};
 
-		return new() { IsSucceeded = true, Message = "User registered." };
+		return new()
+		{
+			IsSucceeded = true,
+			Message = "User registered successfully."
+		};
 	}
 }

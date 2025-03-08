@@ -50,6 +50,9 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("MainCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -73,6 +76,8 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("MainCategoryId");
 
                     b.ToTable("Ads");
                 });
@@ -107,6 +112,40 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.HasIndex("AdId");
 
                     b.ToTable("AdImages");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.AdSubCategoryValue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AdId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ArchivedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("SubCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdId");
+
+                    b.HasIndex("SubCategoryId");
+
+                    b.ToTable("AdSubCategoryValues");
                 });
 
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.AppUser", b =>
@@ -163,17 +202,12 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("RefreshToken")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTimeOffset>("RefreshTokenExpiresAt")
+                    b.Property<DateTimeOffset?>("RefreshTokenExpiresAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -211,18 +245,9 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSubCategory")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ParentCategoryId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -232,8 +257,6 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ParentCategoryId");
 
                     b.ToTable("Categories");
                 });
@@ -264,6 +287,112 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.MainCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ArchivedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ParentCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("MainCategories");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.SubCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ArchivedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSearchable")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("MainCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MainCategoryId");
+
+                    b.ToTable("SubCategories");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.SubCategoryOption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ArchivedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SubCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubCategoryId");
+
+                    b.ToTable("SubCategoryOptions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -417,11 +546,19 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ClassifiedsApp.Core.Entities.MainCategory", "MainCategory")
+                        .WithMany("Ads")
+                        .HasForeignKey("MainCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("AppUser");
 
                     b.Navigation("Category");
 
                     b.Navigation("Location");
+
+                    b.Navigation("MainCategory");
                 });
 
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.AdImage", b =>
@@ -435,13 +572,56 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.Navigation("Ad");
                 });
 
-            modelBuilder.Entity("ClassifiedsApp.Core.Entities.Category", b =>
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.AdSubCategoryValue", b =>
+                {
+                    b.HasOne("ClassifiedsApp.Core.Entities.Ad", "Ad")
+                        .WithMany("SubCategoryValues")
+                        .HasForeignKey("AdId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClassifiedsApp.Core.Entities.SubCategory", "SubCategory")
+                        .WithMany()
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ad");
+
+                    b.Navigation("SubCategory");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.MainCategory", b =>
                 {
                     b.HasOne("ClassifiedsApp.Core.Entities.Category", "ParentCategory")
-                        .WithMany("SubCategories")
-                        .HasForeignKey("ParentCategoryId");
+                        .WithMany("MainCategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.SubCategory", b =>
+                {
+                    b.HasOne("ClassifiedsApp.Core.Entities.MainCategory", "MainCategory")
+                        .WithMany("SubCategories")
+                        .HasForeignKey("MainCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MainCategory");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.SubCategoryOption", b =>
+                {
+                    b.HasOne("ClassifiedsApp.Core.Entities.SubCategory", "SubCategory")
+                        .WithMany("Options")
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubCategory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -498,6 +678,8 @@ namespace ClassifiedsApp.Infrastructure.Migrations
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.Ad", b =>
                 {
                     b.Navigation("Images");
+
+                    b.Navigation("SubCategoryValues");
                 });
 
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.AppUser", b =>
@@ -509,12 +691,24 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                 {
                     b.Navigation("Ads");
 
-                    b.Navigation("SubCategories");
+                    b.Navigation("MainCategories");
                 });
 
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.Location", b =>
                 {
                     b.Navigation("Ads");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.MainCategory", b =>
+                {
+                    b.Navigation("Ads");
+
+                    b.Navigation("SubCategories");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.SubCategory", b =>
+                {
+                    b.Navigation("Options");
                 });
 #pragma warning restore 612, 618
         }

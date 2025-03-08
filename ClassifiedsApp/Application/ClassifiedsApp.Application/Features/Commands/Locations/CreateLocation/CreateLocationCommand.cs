@@ -1,6 +1,9 @@
-﻿namespace ClassifiedsApp.Application.Features.Commands.Locations.CreateLocation
+﻿using MediatR;
+
+namespace ClassifiedsApp.Application.Features.Commands.Locations.CreateLocation;
+
+public class CreateLocationCommand : IRequest<CreateLocationCommandResponse>
 {
-	internal class CreateLocationCommand
-	{
-	}
+	public string City { get; set; }
+	public string Country { get; set; }
 }

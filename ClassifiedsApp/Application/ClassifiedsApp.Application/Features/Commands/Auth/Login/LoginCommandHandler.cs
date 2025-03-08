@@ -1,4 +1,5 @@
-﻿using ClassifiedsApp.Core.Entities;
+﻿using Azure.Identity;
+using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Core.Interfaces.Services.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -7,9 +8,9 @@ namespace ClassifiedsApp.Application.Features.Commands.Auth.Login;
 
 public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandResponse>
 {
-	private readonly UserManager<AppUser> _userManager;
-	private readonly SignInManager<AppUser> _signInManager;
-	private readonly ITokenService _tokenService;
+	readonly UserManager<AppUser> _userManager;
+	readonly SignInManager<AppUser> _signInManager;
+	readonly ITokenService _tokenService;
 
 	public LoginCommandHandler(UserManager<AppUser> userManager,
 								SignInManager<AppUser> signInManager,
@@ -38,15 +39,15 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandRes
 
 			response.AuthToken.AccessToken = _tokenService.GenerateAccessToken(user.Id, request.Email, roles, userClaims);
 			response.AuthToken.RefreshToken = _tokenService.GenerateRefreshToken();
-			response.AuthToken.Expiration = DateTimeOffset.Now.AddHours(12);
+			response.AuthToken.RefreshTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(1);
 
+			// bu kisim bir user service olucak. ( _userService.UpdateRefreshToken(); )
 			user.RefreshToken = response.AuthToken.RefreshToken;
-			user.RefreshTokenExpiresAt = response.AuthToken.Expiration;
-
+			user.RefreshTokenExpiresAt = response.AuthToken.RefreshTokenExpiresAt;
 			await _userManager.UpdateAsync(user);
 
 			return response;
 		}
-		throw new Exception("Login Failed.");
+		throw new AuthenticationFailedException("Login Failed.");
 	}
 }

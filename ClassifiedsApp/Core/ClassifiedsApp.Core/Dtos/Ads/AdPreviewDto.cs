@@ -1,0 +1,12 @@
+﻿namespace ClassifiedsApp.Core.Dtos.Ads;
+
+// dto for showing ad preview. ( ad in ads grid. )
+public class AdPreviewDto
+{
+	public Guid Id { get; set; }
+	public string Title { get; set; }
+	public decimal Price { get; set; }
+	public string LocationCityName { get; set; }
+	public string MainImageUrl { get; set; }
+	public DateTimeOffset UpdatedAt { get; set; }
+}

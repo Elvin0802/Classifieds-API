@@ -16,20 +16,25 @@ public class Ad : BaseEntity
 
 	public Guid CategoryId { get; set; }
 	public Category Category { get; set; }
+
+	public Guid MainCategoryId { get; set; }
+	public MainCategory MainCategory { get; set; }
+
 	public Guid LocationId { get; set; }
 	public Location Location { get; set; }
+
 	public Guid AppUserId { get; set; }
 	public AppUser AppUser { get; set; }
 
 	public IList<AdImage> Images { get; set; }
+	public IList<AdSubCategoryValue> SubCategoryValues { get; set; }
 
 	public Ad()
 	{
 		Title = "";
 		Description = "";
 		Price = 0;
-		ExpiresAt = DateTimeOffset.UtcNow.AddDays(7);
-		Status = AdStatus.Created;
+		Status = AdStatus.Rejected;
 		ViewCount = 0;
 	}
 }

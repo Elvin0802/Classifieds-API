@@ -1,6 +1,7 @@
-﻿namespace ClassifiedsApp.Application.Features.Commands.Locations.CreateLocation
+﻿namespace ClassifiedsApp.Application.Features.Commands.Locations.CreateLocation;
+
+public class CreateLocationCommandResponse
 {
-	internal class CreateLocationCommandResponse
-	{
-	}
+	public bool IsSucceeded { get; set; }
+	public string Message { get; set; }
 }

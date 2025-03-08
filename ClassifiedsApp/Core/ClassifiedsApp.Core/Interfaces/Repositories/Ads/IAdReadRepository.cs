@@ -5,4 +5,5 @@ namespace ClassifiedsApp.Core.Interfaces.Repositories.Ads;
 
 public interface IAdReadRepository : IReadRepository<Ad>
 {
+	Task<Ad> GetAdByIdWithIncludesAsync(Guid id, bool tracking = true);
 }
