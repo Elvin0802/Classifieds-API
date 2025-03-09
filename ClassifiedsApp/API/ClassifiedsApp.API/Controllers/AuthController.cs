@@ -30,16 +30,16 @@ public class AuthController : ControllerBase
 			Response.Cookies.Append("accessToken", response.AuthToken.AccessToken, new CookieOptions
 			{
 				HttpOnly = true,
-				Secure = true,
-				SameSite = SameSiteMode.None,
+				Secure = false,
+				SameSite = SameSiteMode.Lax,
 				Expires = DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration)
 			});
 
-			Response.Cookies.Append("refreshToken", response.AuthToken.RefreshToken, new CookieOptions
+			Response.Cookies.Append("refreshToken", response.AuthToken.RefreshToken!, new CookieOptions
 			{
 				HttpOnly = true,
-				Secure = true,
-				SameSite = SameSiteMode.None,
+				Secure = false,
+				SameSite = SameSiteMode.Lax,
 				Expires = response.AuthToken.RefreshTokenExpiresAt
 			});
 
@@ -57,25 +57,29 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpPost("[action]")]
-	public async Task<IActionResult> RefreshTokenLogin(RefreshTokenLoginCommand rtlc)
+	public async Task<IActionResult> RefreshTokenLogin()
 	{
 		try
 		{
-			RefreshTokenLoginCommandResponse response = await _mediator.Send(rtlc);
+			var refreshToken = Request.Cookies["refreshToken"]!;
+
+			if (refreshToken == null) return Unauthorized("No Refresh Token");
+
+			RefreshTokenLoginCommandResponse response = await _mediator.Send(new RefreshTokenLoginCommand() { RefreshToken = refreshToken });
 
 			Response.Cookies.Append("accessToken", response.AuthToken.AccessToken, new CookieOptions
 			{
 				HttpOnly = true,
-				Secure = true,
-				SameSite = SameSiteMode.None,
+				Secure = false,
+				SameSite = SameSiteMode.Lax,
 				Expires = DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration)
 			});
 
-			Response.Cookies.Append("refreshToken", response.AuthToken.RefreshToken, new CookieOptions
+			Response.Cookies.Append("refreshToken", response.AuthToken.RefreshToken!, new CookieOptions
 			{
 				HttpOnly = true,
-				Secure = true,
-				SameSite = SameSiteMode.None,
+				Secure = false,
+				SameSite = SameSiteMode.Lax,
 				Expires = response.AuthToken.RefreshTokenExpiresAt
 			});
 

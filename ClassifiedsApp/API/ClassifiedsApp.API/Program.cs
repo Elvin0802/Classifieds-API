@@ -16,10 +16,10 @@ builder.Services.AddSwagger();
 
 builder.Services.AddCors(options => options.AddPolicy("CORSPolicy", builder =>
 {
-	builder.AllowAnyMethod()
-			   .AllowAnyHeader()
-			   .WithOrigins("http://localhost:5174", "http://localhost:5173")
-			   .AllowCredentials();
+	builder.WithOrigins("http://localhost:5174", "http://localhost:5173")
+		   .AllowAnyMethod()
+		   .AllowAnyHeader()
+		   .AllowCredentials();
 }));
 
 var app = builder.Build();

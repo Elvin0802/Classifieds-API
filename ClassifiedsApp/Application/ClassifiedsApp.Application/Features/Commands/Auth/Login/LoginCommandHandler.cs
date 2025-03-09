@@ -39,7 +39,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandRes
 
 			response.AuthToken.AccessToken = _tokenService.GenerateAccessToken(user.Id, request.Email, roles, userClaims);
 			response.AuthToken.RefreshToken = _tokenService.GenerateRefreshToken();
-			response.AuthToken.RefreshTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(1);
+			response.AuthToken.RefreshTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(5);
 
 			// bu kisim bir user service olucak. ( _userService.UpdateRefreshToken(); )
 			user.RefreshToken = response.AuthToken.RefreshToken;
