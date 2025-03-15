@@ -1,11 +1,20 @@
 using ClassifiedsApp.API.Config;
+using ClassifiedsApp.API.Middlewares;
 using ClassifiedsApp.Application;
 using ClassifiedsApp.Infrastructure;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Host.UseSerilog((context, config) =>
+{
+	config.ReadFrom.Configuration(context.Configuration);
+});
 
 builder.Services.AuthenticationAndAuthorization(builder.Configuration);
 
@@ -29,6 +38,10 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
