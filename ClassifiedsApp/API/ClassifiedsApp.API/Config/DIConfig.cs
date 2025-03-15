@@ -77,6 +77,17 @@ public static class DIConfig
 		})
 		.AddJwtBearer(options =>
 		{
+			options.Events = new JwtBearerEvents
+			{
+				OnMessageReceived = context =>
+				{
+					if (context.Request.Cookies.ContainsKey("accessToken"))
+						context.Token = context.Request.Cookies["accessToken"];
+
+					return Task.CompletedTask;
+				}
+			};
+
 			options.TokenValidationParameters =
 			new TokenValidationParameters
 			{

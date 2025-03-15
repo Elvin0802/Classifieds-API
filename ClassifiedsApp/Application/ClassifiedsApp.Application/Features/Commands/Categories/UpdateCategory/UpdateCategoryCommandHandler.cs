@@ -26,7 +26,7 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
 
 			var category = await _readRepository.GetByIdAsync(request.Id);
 
-			category.UpdatedAt = DateTimeOffset.Now;
+			category.UpdatedAt = DateTimeOffset.UtcNow;
 			category.Name = request.Name;
 			category.Slug = request.Name.ToLower().Replace(" ", "-");
 

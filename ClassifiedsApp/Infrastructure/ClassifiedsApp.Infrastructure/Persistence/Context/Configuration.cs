@@ -12,7 +12,8 @@ public static class Configuration
 			try
 			{
 				//configurationManager.SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../../../../../API/ClassifiedsApp.API"));
-				configurationManager.SetBasePath("D:\\Visual Programming Codes\\C# Codes\\Final Projects\\Classifieds App\\Server\\ClassifiedsApp\\API\\ClassifiedsApp.API");
+				configurationManager.SetBasePath(@"D:\Visual Programming Codes\C Sharp Codes\Final Projects\Classifieds App\Server\ClassifiedsApp\API\ClassifiedsApp.API");
+
 				configurationManager.AddJsonFile("appsettings.json");
 
 			}

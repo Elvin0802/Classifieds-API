@@ -32,7 +32,7 @@ public class TokenService : ITokenService
 		var accessToken = new JwtSecurityToken(
 			issuer: _jwtConfig.Issuer,
 			audience: _jwtConfig.Audience,
-			expires: DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration),
+			expires: DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration).AddSeconds(-30),
 			signingCredentials: signingCredentials,
 			claims: claims
 			);

@@ -27,7 +27,7 @@ public class UpdateLocationCommandHandler : IRequestHandler<UpdateLocationComman
 
 			var location = await _readRepository.GetByIdAsync(request.Id);
 
-			location.UpdatedAt = DateTimeOffset.Now;
+			location.UpdatedAt = DateTimeOffset.UtcNow;
 			location.City = request.City;
 			location.Country = request.Country;
 

@@ -10,7 +10,7 @@ public class BaseEntity
 	public BaseEntity()
 	{
 		Id = Guid.NewGuid();
-		CreatedAt = DateTimeOffset.Now;
+		CreatedAt = DateTimeOffset.UtcNow;
 		UpdatedAt = CreatedAt;
 		ArchivedAt = DateTimeOffset.MinValue;
 	}

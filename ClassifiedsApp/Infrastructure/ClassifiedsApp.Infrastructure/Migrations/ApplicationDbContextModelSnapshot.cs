@@ -47,6 +47,9 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<bool>("IsNew")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
@@ -395,6 +398,36 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.ToTable("SubCategoryOptions");
                 });
 
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.UserAdSelection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AdId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AppUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ArchivedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdId");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("UserAdSelections");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -624,6 +657,25 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.Navigation("SubCategory");
                 });
 
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.UserAdSelection", b =>
+                {
+                    b.HasOne("ClassifiedsApp.Core.Entities.Ad", "Ad")
+                        .WithMany("SelectorUsers")
+                        .HasForeignKey("AdId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClassifiedsApp.Core.Entities.AppUser", "AppUser")
+                        .WithMany("SelectedAds")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ad");
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -679,12 +731,16 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                 {
                     b.Navigation("Images");
 
+                    b.Navigation("SelectorUsers");
+
                     b.Navigation("SubCategoryValues");
                 });
 
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.AppUser", b =>
                 {
                     b.Navigation("Ads");
+
+                    b.Navigation("SelectedAds");
                 });
 
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.Category", b =>

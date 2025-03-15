@@ -5,7 +5,7 @@
 namespace ClassifiedsApp.Infrastructure.Migrations
 {
 	/// <inheritdoc />
-	public partial class InitMig : Migration
+	public partial class Mig_1 : Migration
 	{
 		/// <inheritdoc />
 		protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,8 +30,8 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 				{
 					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
 					Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-					RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
-					RefreshTokenExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+					RefreshTokenExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
 					CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
 					UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
 					ArchivedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
@@ -224,6 +224,7 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 					Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
 					Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
 					Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+					IsNew = table.Column<bool>(type: "bit", nullable: false),
 					ExpiresAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
 					Status = table.Column<int>(type: "int", nullable: false),
 					ViewCount = table.Column<long>(type: "bigint", nullable: false),
@@ -311,6 +312,34 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 						principalTable: "Ads",
 						principalColumn: "Id",
 						onDelete: ReferentialAction.Cascade);
+				});
+
+			migrationBuilder.CreateTable(
+				name: "UserAdSelections",
+				columns: table => new
+				{
+					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					AdId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+					CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+					ArchivedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+				},
+				constraints: table =>
+				{
+					table.PrimaryKey("PK_UserAdSelections", x => x.Id);
+					table.ForeignKey(
+						name: "FK_UserAdSelections_Ads_AdId",
+						column: x => x.AdId,
+						principalTable: "Ads",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.Cascade);
+					table.ForeignKey(
+						name: "FK_UserAdSelections_AspNetUsers_AppUserId",
+						column: x => x.AppUserId,
+						principalTable: "AspNetUsers",
+						principalColumn: "Id",
+						onDelete: ReferentialAction.NoAction);
 				});
 
 			migrationBuilder.CreateTable(
@@ -453,6 +482,16 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 				name: "IX_SubCategoryOptions_SubCategoryId",
 				table: "SubCategoryOptions",
 				column: "SubCategoryId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_UserAdSelections_AdId",
+				table: "UserAdSelections",
+				column: "AdId");
+
+			migrationBuilder.CreateIndex(
+				name: "IX_UserAdSelections_AppUserId",
+				table: "UserAdSelections",
+				column: "AppUserId");
 		}
 
 		/// <inheritdoc />
@@ -483,13 +522,16 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 				name: "SubCategoryOptions");
 
 			migrationBuilder.DropTable(
-				name: "Ads");
+				name: "UserAdSelections");
 
 			migrationBuilder.DropTable(
 				name: "AspNetRoles");
 
 			migrationBuilder.DropTable(
 				name: "SubCategories");
+
+			migrationBuilder.DropTable(
+				name: "Ads");
 
 			migrationBuilder.DropTable(
 				name: "AspNetUsers");

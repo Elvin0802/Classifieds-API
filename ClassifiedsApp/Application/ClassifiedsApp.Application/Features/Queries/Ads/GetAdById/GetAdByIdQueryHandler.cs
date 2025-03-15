@@ -24,7 +24,7 @@ public class GetAdByIdQueryHandler : IRequestHandler<GetAdByIdQuery, GetAdByIdRe
 
 	public async Task<GetAdByIdResponse> Handle(GetAdByIdQuery request, CancellationToken cancellationToken)
 	{
-		var item = await _readRepository.GetAdByIdWithIncludesAsync(request.Id, false);
+		var item = await _readRepository.GetAdByIdWithIncludesAsync(request.Id, true);
 
 		item.ViewCount++;
 		_writeRepository.Update(item);

@@ -10,10 +10,11 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
 {
 	public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
+	public DbSet<AppUser> AppUsers { get; set; }
 	public DbSet<Ad> Ads { get; set; }
 	public DbSet<AdImage> AdImages { get; set; }
 	public DbSet<AdSubCategoryValue> AdSubCategoryValues { get; set; }
-	public DbSet<AppUser> AppUsers { get; set; }
+	public DbSet<UserAdSelection> UserAdSelections { get; set; }
 	public DbSet<Category> Categories { get; set; }
 	public DbSet<Location> Locations { get; set; }
 	public DbSet<MainCategory> MainCategories { get; set; }

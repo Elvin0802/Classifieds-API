@@ -1,7 +1,10 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Core.Enums;
+using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
 
+
+// BaseGetAllQuery
 /*
 public class GetAllAdsQuery : IRequest<GetAllAdsQueryResponse>
 {
@@ -15,25 +18,24 @@ public class GetAllAdsQuery : IRequest<GetAllAdsQueryResponse>
 
 public class GetAllAdsQuery : IRequest<GetAllAdsQueryResponse>
 {
-	// Pagination
 	public int PageNumber { get; set; } = 1;
 	public int PageSize { get; set; } = 10;
 
-	// Sorting
 	public string? SortBy { get; set; }
 	public bool IsDescending { get; set; } = true;
 
-	// Search
 	public string? SearchTitle { get; set; }
 
-	// Filters
 	public decimal? MinPrice { get; set; }
 	public decimal? MaxPrice { get; set; }
 	public Guid? CategoryId { get; set; }
 	public Guid? MainCategoryId { get; set; }
 	public Guid? LocationId { get; set; }
 
-	// Additional sub category filters
-	public Dictionary<Guid, string>? SubCategoryValues { get; set; } // Guid = Marka , string = BMW
+	public Guid? CurrentAppUserId { get; set; }
+	public Guid? SearchedAppUserId { get; set; }
+	public AdStatus? AdStatus { get; set; }
+
+	public Dictionary<Guid, string>? SubCategoryValues { get; set; }
 
 }

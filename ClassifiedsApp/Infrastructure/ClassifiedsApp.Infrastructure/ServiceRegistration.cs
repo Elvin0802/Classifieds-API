@@ -2,11 +2,13 @@
 using ClassifiedsApp.Core.Interfaces.Repositories.Ads;
 using ClassifiedsApp.Core.Interfaces.Repositories.Categories;
 using ClassifiedsApp.Core.Interfaces.Repositories.Locations;
+using ClassifiedsApp.Core.Interfaces.Repositories.Users;
 using ClassifiedsApp.Infrastructure.Persistence.Context;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.AdImages;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.Ads;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.Categories;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.Locations;
+using ClassifiedsApp.Infrastructure.Persistence.Repositories.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -42,5 +44,7 @@ public static class ServiceRegistration
 		services.AddScoped<ISubCategoryOptionWriteRepository, SubCategoryOptionWriteRepository>();
 		services.AddScoped<IMainCategoryReadRepository, MainCategoryReadRepository>();
 		services.AddScoped<IMainCategoryWriteRepository, MainCategoryWriteRepository>();
+		services.AddScoped<IUserAdSelectionWriteRepository, UserAdSelectionWriteRepository>();
+		services.AddScoped<IUserAdSelectionReadRepository, UserAdSelectionReadRepository>();
 	}
 }

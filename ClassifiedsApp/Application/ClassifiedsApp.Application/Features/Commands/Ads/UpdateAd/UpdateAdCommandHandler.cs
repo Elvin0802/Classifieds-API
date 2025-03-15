@@ -21,13 +21,14 @@ public class UpdateAdCommandHandler : IRequestHandler<UpdateAdCommand, UpdateAdC
 		{
 			Ad ad = await _readRepository.GetByIdAsync(request.Id);
 
-			ad.Title = request.Title;
+			if (ad is null)
+				throw new ArgumentNullException(nameof(ad), "Ad Not Found.");
+
 			ad.Description = request.Description;
 			ad.Price = request.Price;
-			ad.CategoryId = request.CategoryId;
-			ad.LocationId = request.LocationId;
+			ad.IsNew = request.IsNew;
 
-			ad.UpdatedAt = DateTimeOffset.Now;
+			ad.UpdatedAt = DateTimeOffset.UtcNow;
 
 			_writeRepository.Update(ad);
 

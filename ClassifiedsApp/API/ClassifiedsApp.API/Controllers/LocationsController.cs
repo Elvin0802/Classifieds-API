@@ -1,4 +1,6 @@
 ﻿using ClassifiedsApp.Application.Features.Commands.Locations.CreateLocation;
+using ClassifiedsApp.Application.Features.Commands.Locations.DeleteLocation;
+using ClassifiedsApp.Application.Features.Commands.Locations.UpdateLocation;
 using ClassifiedsApp.Application.Features.Queries.Locations.GetAllLocations;
 using ClassifiedsApp.Application.Features.Queries.Locations.GetLocationById;
 using MediatR;
@@ -17,26 +19,42 @@ public class LocationsController : ControllerBase
 		_mediator = mediator;
 	}
 
-	[HttpPost("create")]
-	public async Task<ActionResult<CreateLocationCommandResponse>> Create([FromBody] CreateLocationCommand createDto)
+	[HttpPost("[action]")]
+	public async Task<ActionResult<CreateLocationCommandResponse>> Create([FromBody] CreateLocationCommand command)
 	{
-		var result = await _mediator.Send(createDto);
+		var result = await _mediator.Send(command);
 
 		return Ok(result);
 	}
 
-	[HttpGet("all")]
-	public async Task<ActionResult<GetAllLocationsQueryResponse>> GetAll([FromQuery] GetAllLocationsQuery getAllDto)
+	[HttpGet("[action]")]
+	public async Task<ActionResult<GetAllLocationsQueryResponse>> GetAll([FromQuery] GetAllLocationsQuery command)
 	{
-		var result = await _mediator.Send(getAllDto);
+		var result = await _mediator.Send(command);
 
 		return Ok(result);
 	}
 
-	[HttpGet("byId")]
-	public async Task<ActionResult<GetLocationByIdQueryResponse>> GetById([FromQuery] GetLocationByIdQuery getByIdDto)
+	[HttpGet("[action]")]
+	public async Task<ActionResult<GetLocationByIdQueryResponse>> GetById([FromQuery] GetLocationByIdQuery command)
 	{
-		var result = await _mediator.Send(getByIdDto);
+		var result = await _mediator.Send(command);
+
+		return Ok(result);
+	}
+
+	[HttpPost("[action]")]
+	public async Task<ActionResult<UpdateLocationCommandResponse>> Update([FromBody] UpdateLocationCommand command)
+	{
+		var result = await _mediator.Send(command);
+
+		return Ok(result);
+	}
+
+	[HttpPost("[action]")]
+	public async Task<ActionResult<DeleteLocationCommandResponse>> Delete([FromBody] DeleteLocationCommand command)
+	{
+		var result = await _mediator.Send(command);
 
 		return Ok(result);
 	}

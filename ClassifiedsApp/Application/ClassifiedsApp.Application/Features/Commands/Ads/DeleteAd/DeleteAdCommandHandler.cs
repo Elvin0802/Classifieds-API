@@ -17,7 +17,7 @@ public class DeleteAdCommandHandler : IRequestHandler<DeleteAdCommand, DeleteAdC
 		try
 		{
 			if (!await _adWriteRepository.RemoveAsync(request.Id))
-				throw new KeyNotFoundException("Ad with this id was not found.");
+				throw new KeyNotFoundException($"Ad with this id: {request.Id} was not found.");
 
 			await _adWriteRepository.SaveAsync();
 

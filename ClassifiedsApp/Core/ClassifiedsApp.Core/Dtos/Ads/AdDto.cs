@@ -11,6 +11,7 @@ public class AdDto : BaseEntityDto
 	public string Title { get; set; }
 	public string Description { get; set; }
 	public decimal Price { get; set; }
+	public bool IsNew { get; set; }
 	public long ViewCount { get; set; }
 	public CategoryDto Category { get; set; }
 	public MainCategoryDto MainCategory { get; set; }

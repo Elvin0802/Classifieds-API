@@ -1,7 +1,9 @@
 ﻿using ClassifiedsApp.Core.Dtos.Ads;
 using ClassifiedsApp.Core.Entities;
+using ClassifiedsApp.Core.Enums;
 using ClassifiedsApp.Core.Interfaces.Repositories.Ads;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
@@ -54,25 +56,43 @@ public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQu
 public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQueryResponse>
 {
 	private readonly IAdReadRepository _repository;
+	readonly UserManager<AppUser> _userManager;
 
-	public GetAllAdsQueryHandler(IAdReadRepository repository)
+	public GetAllAdsQueryHandler(IAdReadRepository repository, UserManager<AppUser> userManager)
 	{
 		_repository = repository;
+		_userManager = userManager;
 	}
 
 	public async Task<GetAllAdsQueryResponse> Handle(GetAllAdsQuery request, CancellationToken cancellationToken)
 	{
 		// Start with base query
 		var query = _repository.GetAll(false)
-			.Where(ad => ad.Status == Core.Enums.AdStatus.Active)
-			.Include(ad => ad.Images)
-			.Include(ad => ad.Location)
-			.Include(ad => ad.Category)
-			.Include(ad => ad.MainCategory)
-			.Include(ad => ad.SubCategoryValues)
-				.ThenInclude(scv => scv.SubCategory)
-			.AsQueryable();
+								.Include(ad => ad.Images)
+								.Include(ad => ad.AppUser)
+								.Include(ad => ad.Location)
+								.Include(ad => ad.Category)
+								.Include(ad => ad.MainCategory)
+								.Include(ad => ad.SubCategoryValues)
+									.ThenInclude(scv => scv.SubCategory)
+								.Include(ad => ad.SelectorUsers)
+									.ThenInclude(su => su.AppUser)
+								.AsQueryable();
 
+		if (!(request.AdStatus.HasValue))
+			query = query.Where(ad => ad.Status == AdStatus.Active);
+
+		if (request.SearchedAppUserId.HasValue)
+		{
+			query = query.Where(ad => ad.AppUserId == request.SearchedAppUserId.Value);
+
+			if (request.AdStatus.HasValue)
+				query = query.Where(ad => ad.Status == request.AdStatus.Value);
+
+			//// for optimisation , use this.
+			//if (request.AdStatus.HasValue && request.AdStatus.Value != AdStatus.Active)
+			//	query = query.Where(ad => ad.Status == request.AdStatus.Value);
+		}
 
 		// Apply search filter
 		var searchTerm = request.SearchTitle?.Trim().ToLower();
@@ -125,7 +145,9 @@ public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQu
 				Title = p.Title,
 				Price = p.Price,
 				LocationCityName = p.Location.City,
+				IsNew = p.IsNew,
 				MainImageUrl = p.Images.FirstOrDefault(img => img.SortOrder == 0)!.Url,
+				IsSelected = request.CurrentAppUserId.HasValue && p.SelectorUsers.Any(su => su.AppUserId == request.CurrentAppUserId.Value),
 				UpdatedAt = p.UpdatedAt,
 			})
 			.ToListAsync(cancellationToken);

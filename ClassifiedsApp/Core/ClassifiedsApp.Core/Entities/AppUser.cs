@@ -14,4 +14,5 @@ public class AppUser : IdentityUser<Guid>
 	public DateTimeOffset ArchivedAt { get; set; }
 
 	public IList<Ad> Ads { get; set; }
+	public IList<UserAdSelection> SelectedAds { get; set; }
 }
