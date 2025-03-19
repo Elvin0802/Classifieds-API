@@ -51,6 +51,8 @@ public class CreateAdCommandHandler : IRequestHandler<CreateAdCommand, CreateAdC
 
 			newAd.Images = new List<AdImage>();
 
+			// Image service created. use !
+
 			int imageSortOrder = 0;
 
 			List<string> lstImages = [

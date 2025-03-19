@@ -1,4 +1,6 @@
-﻿using ClassifiedsApp.Application.Features.Commands.Auth.Login;
+﻿using ClassifiedsApp.Application.Features.Commands.Auth.ConfirmResetToken;
+using ClassifiedsApp.Application.Features.Commands.Auth.Login;
+using ClassifiedsApp.Application.Features.Commands.Auth.PasswordReset;
 using ClassifiedsApp.Application.Features.Commands.Auth.RefreshTokenLogin;
 using ClassifiedsApp.Core.Dtos.Auth.Token;
 using FluentValidation;
@@ -63,7 +65,7 @@ public class AuthController : ControllerBase
 		{
 			var refreshToken = Request.Cookies["refreshToken"]!;
 
-			if (refreshToken == null) return Unauthorized("No Refresh Token");
+			if (refreshToken is null) return Unauthorized("No Refresh Token");
 
 			RefreshTokenLoginCommandResponse response = await _mediator.Send(new RefreshTokenLoginCommand() { RefreshToken = refreshToken });
 
@@ -98,6 +100,18 @@ public class AuthController : ControllerBase
 		Response.Cookies.Delete("refreshToken");
 
 		return Ok();
+	}
+
+	[HttpPost("reset-password")]
+	public async Task<ActionResult<PasswordResetCommandResponse>> PasswordReset([FromBody] PasswordResetCommand command)
+	{
+		return Ok(await _mediator.Send(command));
+	}
+
+	[HttpPost("confirm-reset-token")]
+	public async Task<ActionResult<ConfirmResetTokenCommandResponse>> VerifyResetToken([FromBody] ConfirmResetTokenCommand command)
+	{
+		return Ok(await _mediator.Send(command));
 	}
 }
 

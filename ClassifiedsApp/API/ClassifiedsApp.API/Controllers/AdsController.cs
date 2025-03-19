@@ -39,19 +39,29 @@ public class AdsController : ControllerBase
 	}
 
 	[HttpPost("[action]")]
-	[Authorize]
 	public async Task<ActionResult<GetAllAdsQueryResponse>> GetAll([FromBody] GetAllAdsQuery? command)
 	{
-		var userId = Guid.Parse(User.FindFirst("UserId")?.Value!);
+		try
+		{
+			var userIdClaim = User.FindFirst("UserId")?.Value;
 
-		if (userId == Guid.Empty)
-			return Unauthorized();
+			if (!(string.IsNullOrWhiteSpace(userIdClaim)))
+				if (Guid.TryParse(userIdClaim, out var userId))
+					command!.CurrentAppUserId = userId;
 
-		command!.CurrentAppUserId = userId;
+			return Ok(await _mediator.Send(command!));
+		}
+		catch (Exception ex)
+		{
+			var messages = new List<string>();
+			while (ex != null)
+			{
+				messages.Add(ex.Message);
+				ex = ex.InnerException!;
+			}
 
-		var result = await _mediator.Send(command!);
-
-		return Ok(result);
+			return BadRequest(messages);
+		}
 	}
 
 	[HttpGet("[action]")]
@@ -69,7 +79,7 @@ public class AdsController : ControllerBase
 			while (ex != null)
 			{
 				messages.Add(ex.Message);
-				ex = ex.InnerException;
+				ex = ex.InnerException!;
 			}
 
 			return BadRequest(messages);
@@ -80,9 +90,7 @@ public class AdsController : ControllerBase
 	[Authorize]
 	public async Task<ActionResult<DeleteAdCommandResponse>> Delete([FromQuery] DeleteAdCommand command)
 	{
-		var result = await _mediator.Send(command);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("[action]")]
@@ -112,18 +120,14 @@ public class AdsController : ControllerBase
 
 		command.SelectorAppUserId = userId;
 
-		var result = await _mediator.Send(command);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("[action]")]
 	[Authorize]
 	public async Task<ActionResult<UpdateAdCommandResponse>> Update([FromBody] UpdateAdCommand command)
 	{
-		var result = await _mediator.Send(command);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(command));
 	}
 
 }

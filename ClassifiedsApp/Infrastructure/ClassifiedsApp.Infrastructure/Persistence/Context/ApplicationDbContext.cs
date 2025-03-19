@@ -11,6 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid
 	public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
 	public DbSet<AppUser> AppUsers { get; set; }
+	public DbSet<AppRole> AppRoles { get; set; }
 	public DbSet<Ad> Ads { get; set; }
 	public DbSet<AdImage> AdImages { get; set; }
 	public DbSet<AdSubCategoryValue> AdSubCategoryValues { get; set; }

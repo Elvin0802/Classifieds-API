@@ -1,10 +1,7 @@
 ﻿using ClassifiedsApp.Application.Services;
 using ClassifiedsApp.Core.Dtos.Auth.Token;
-using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Core.Interfaces.Services.Auth;
-using ClassifiedsApp.Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -31,7 +28,7 @@ public static class DIConfig
 				Scheme = "Bearer",
 				BearerFormat = "JWT",
 				In = ParameterLocation.Header,
-				Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer key-key-key-key\""
+				Description = "\nExample: \"Bearer key-key-key-key\""
 			});
 
 			setup.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -56,11 +53,6 @@ public static class DIConfig
 					this IServiceCollection services,
 					IConfiguration configuration)
 	{
-
-		services.AddIdentity<AppUser, IdentityRole<Guid>>()
-				.AddEntityFrameworkStores<ApplicationDbContext>()
-				.AddDefaultTokenProviders();
-
 		services.AddScoped<ITokenService, TokenService>();
 
 		var jwtConfig = new JwtConfigDto();

@@ -8,51 +8,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
 
-/*
-public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQueryResponse>
-{
-	readonly IAdReadRepository _repository;
-
-	public GetAllAdsQueryHandler(IAdReadRepository repository)
-	{
-		_repository = repository;
-	}
-
-	public async Task<GetAllAdsQueryResponse> Handle(GetAllAdsQuery request, CancellationToken cancellationToken)
-	{
-		var query = _repository.GetAll(false)
-								.Where(ad => ad.Status == Core.Enums.AdStatus.Active) // sadece aktiv elanlar gosterilir.
-								.Include(ad => ad.Images)
-								.Include(ad => ad.Location)
-								.OrderByDescending(p => p.CreatedAt); // yaradilma tarixine gore yeniden kohneye dogru siralamaq.
-
-		var totalCount = await query.CountAsync(cancellationToken);
-
-		var list = await query.Skip((request.PageNumber - 1) * request.PageSize)
-							  .Take(request.PageSize)
-							  .Select(p => new AdPreviewDto
-							  {
-								  Id = p.Id,
-								  Title = p.Title,
-								  Price = p.Price,
-								  LocationCityName = p.Location.City,
-								  MainImageUrl = p.Images.FirstOrDefault(img => img.SortOrder == 0)!.Url,
-								  UpdatedAt = p.UpdatedAt,
-							  })
-							  .ToListAsync(cancellationToken);
-
-		return new GetAllAdsQueryResponse
-		{
-			Items = list,
-			PageNumber = request.PageNumber,
-			PageSize = request.PageSize,
-			TotalCount = totalCount
-		};
-	}
-}
-*/
-
-
 public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQueryResponse>
 {
 	private readonly IAdReadRepository _repository;
@@ -88,6 +43,9 @@ public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQu
 
 			if (request.AdStatus.HasValue)
 				query = query.Where(ad => ad.Status == request.AdStatus.Value);
+
+			request.PageSize = query.Count();
+
 
 			//// for optimisation , use this.
 			//if (request.AdStatus.HasValue && request.AdStatus.Value != AdStatus.Active)
@@ -165,13 +123,11 @@ public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQu
 	{
 		if (string.IsNullOrWhiteSpace(sortBy))
 		{
-			// Default sorting
 			return isDescending
 				? query.OrderByDescending(p => p.CreatedAt)
 				: query.OrderBy(p => p.CreatedAt);
 		}
 
-		// Apply dynamic sorting based on property name
 		switch (sortBy.ToLower())
 		{
 			case "price":

@@ -23,27 +23,29 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandRes
 
 	public async Task<LoginCommandResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
 	{
-		AppUser? user = await _userManager.FindByEmailAsync(request.Email);
-
-		if (user is null)
-			throw new Exception("User Not Found.");
+		AppUser? user = await _userManager.FindByEmailAsync(request.Email) ??
+						throw new KeyNotFoundException("User Not Found.");
 
 		SignInResult signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
 		if (signInResult.Succeeded)
 		{
-			LoginCommandResponse response = new LoginCommandResponse() { AuthToken = new() };
+			LoginCommandResponse response = new()
+			{
+				AuthToken = new()
+			};
 
 			var roles = await _userManager.GetRolesAsync(user);
 			var userClaims = await _userManager.GetClaimsAsync(user);
 
 			response.AuthToken.AccessToken = _tokenService.GenerateAccessToken(user.Id, request.Email, roles, userClaims);
 			response.AuthToken.RefreshToken = _tokenService.GenerateRefreshToken();
-			response.AuthToken.RefreshTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10);
+			response.AuthToken.RefreshTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(30);
 
 			// bu kisim bir user service olucak. ( _userService.UpdateRefreshToken(); )
 			user.RefreshToken = response.AuthToken.RefreshToken;
 			user.RefreshTokenExpiresAt = response.AuthToken.RefreshTokenExpiresAt;
+
 			await _userManager.UpdateAsync(user);
 
 			return response;

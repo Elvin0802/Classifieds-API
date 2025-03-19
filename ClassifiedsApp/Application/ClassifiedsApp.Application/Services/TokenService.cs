@@ -9,7 +9,7 @@ namespace ClassifiedsApp.Application.Services;
 
 public class TokenService : ITokenService
 {
-	private readonly JwtConfigDto _jwtConfig;
+	readonly JwtConfigDto _jwtConfig;
 
 	public TokenService(JwtConfigDto jwtConfig)
 	{
@@ -29,13 +29,14 @@ public class TokenService : ITokenService
 
 		var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-		var accessToken = new JwtSecurityToken(
+		var accessToken = new JwtSecurityToken
+		(
 			issuer: _jwtConfig.Issuer,
 			audience: _jwtConfig.Audience,
-			expires: DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration).AddSeconds(-30),
+			expires: DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration),
 			signingCredentials: signingCredentials,
 			claims: claims
-			);
+		);
 
 		return new JwtSecurityTokenHandler().WriteToken(accessToken);
 	}

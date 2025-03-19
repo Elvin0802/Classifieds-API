@@ -38,7 +38,7 @@ public class RefreshTokenLoginCommandHandler : IRequestHandler<RefreshTokenLogin
 
 			response.AuthToken.AccessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, roles, userClaims);
 			response.AuthToken.RefreshToken = _tokenService.GenerateRefreshToken();
-			response.AuthToken.RefreshTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(10);
+			response.AuthToken.RefreshTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(30);
 
 			// bu kisim bir user service olucak. ( _userService.UpdateRefreshToken(); )
 			user.RefreshToken = response.AuthToken.RefreshToken;

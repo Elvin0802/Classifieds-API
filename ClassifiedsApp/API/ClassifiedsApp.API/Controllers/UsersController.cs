@@ -1,4 +1,5 @@
 ﻿using ClassifiedsApp.Application.Features.Commands.Auth.Register;
+using ClassifiedsApp.Application.Features.Commands.Users.UpdatePassword;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,10 +17,15 @@ public class UsersController : ControllerBase
 	}
 
 	[HttpPost("register")]
-	public async Task<ActionResult<RegisterCommandResponse>> Register(RegisterCommand rc)
+	public async Task<ActionResult<RegisterCommandResponse>> Register(RegisterCommand command)
 	{
-		RegisterCommandResponse response = await _mediator.Send(rc);
-		return Ok(response);
+		return Ok(await _mediator.Send(command));
+	}
+
+	[HttpPost("update-password")]
+	public async Task<ActionResult<UpdatePasswordCommandResponse>> UpdatePassword([FromBody] UpdatePasswordCommand command)
+	{
+		return Ok(await _mediator.Send(command));
 	}
 
 }

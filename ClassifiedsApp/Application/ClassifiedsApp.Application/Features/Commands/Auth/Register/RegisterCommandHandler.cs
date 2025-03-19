@@ -32,17 +32,21 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterC
 
 		var result = await _userManager.CreateAsync(user, request.CreateAppUserDto.Password);
 
-		if (!result.Succeeded)
+		if (result.Succeeded)
+		{
+			await _userManager.AddToRoleAsync(user, "User");
+
 			return new()
 			{
-				IsSucceeded = false,
-				Message = $"User not registered.  {string.Join(" |-------| ", result.Errors.Select(e => e.Description))}"
+				IsSucceeded = true,
+				Message = "User registered successfully."
 			};
+		}
 
 		return new()
 		{
-			IsSucceeded = true,
-			Message = "User registered successfully."
+			IsSucceeded = false,
+			Message = $"User not registered.  {string.Join(" |-------| ", result.Errors.Select(e => e.Description))}"
 		};
 	}
 }
