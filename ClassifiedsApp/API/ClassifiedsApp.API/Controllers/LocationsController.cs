@@ -25,7 +25,22 @@ public class LocationsController : ControllerBase
 	[Authorize(Roles = "Admin")]
 	public async Task<ActionResult<CreateLocationCommandResponse>> Create([FromBody] CreateLocationCommand command)
 	{
-		return Ok(await _mediator.Send(command));
+		try
+		{
+			return Ok(await _mediator.Send(command));
+
+		}
+		catch (Exception ex)
+		{
+			var messages = new List<string>();
+			while (ex != null)
+			{
+				messages.Add(ex.Message);
+				ex = ex.InnerException!;
+			}
+
+			return BadRequest(messages);
+		}
 	}
 
 	[HttpGet("[action]")]

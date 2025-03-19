@@ -4,6 +4,7 @@ using ClassifiedsApp.Core.Interfaces.Services.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 
 namespace ClassifiedsApp.API.Config;
@@ -91,7 +92,8 @@ public static class DIConfig
 				ValidIssuer = jwtConfig.Issuer,
 				ValidAudience = jwtConfig.Audience,
 				IssuerSigningKey
-				= new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Secret))
+				= new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Secret)),
+				RoleClaimType = ClaimsIdentity.DefaultRoleClaimType
 			};
 		});
 

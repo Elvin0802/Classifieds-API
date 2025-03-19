@@ -19,6 +19,7 @@ public static class ServiceRegistration
 
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
 
 		services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

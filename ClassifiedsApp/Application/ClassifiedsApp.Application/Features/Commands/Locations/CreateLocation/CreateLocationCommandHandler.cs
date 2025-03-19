@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Core.Interfaces.Repositories.Locations;
+using ClassifiedsApp.Core.Interfaces.Services.Cache;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -11,14 +12,17 @@ public class CreateLocationCommandHandler : IRequestHandler<CreateLocationComman
 	readonly ILocationWriteRepository _repository;
 	readonly IMapper _mapper;
 	readonly ILogger<CreateLocationCommandHandler> _logger;
+	readonly ICacheService _cacheService;
 
 	public CreateLocationCommandHandler(ILocationWriteRepository repository,
 										IMapper mapper,
-										ILogger<CreateLocationCommandHandler> logger)
+										ILogger<CreateLocationCommandHandler> logger,
+										ICacheService cacheService)
 	{
 		_repository = repository;
 		_mapper = mapper;
 		_logger = logger;
+		_cacheService = cacheService;
 	}
 
 	public async Task<CreateLocationCommandResponse> Handle(CreateLocationCommand request, CancellationToken cancellationToken)
@@ -37,6 +41,8 @@ public class CreateLocationCommandHandler : IRequestHandler<CreateLocationComman
 
 			await _repository.AddAsync(location);
 			await _repository.SaveAsync();
+
+			await _cacheService.RemoveByPrefixAsync("locations_");
 
 			_logger.LogInformation("Location created successfully for City: {City}, Country: {Country}", request.City, request.Country);
 

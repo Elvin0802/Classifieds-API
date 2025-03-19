@@ -18,17 +18,49 @@ public class TokenService : ITokenService
 
 	public string GenerateAccessToken(Guid id, string email, IEnumerable<string> roles, IEnumerable<Claim> userClaims)
 	{
-		var claims = new[]
+		//var claims = new[]
+		//{
+		//	new Claim (ClaimsIdentity.DefaultNameClaimType, email),
+		//	new Claim(ClaimsIdentity.DefaultRoleClaimType, string.Join(",", roles)),
+		//	new Claim("UserId", id.ToString())
+		//}.Concat(userClaims);
+
+		//var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.Secret));
+
+		//var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+		//var accessToken = new JwtSecurityToken
+		//(
+		//	issuer: _jwtConfig.Issuer,
+		//	audience: _jwtConfig.Audience,
+		//	expires: DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration),
+		//	signingCredentials: signingCredentials,
+		//	claims: claims
+		//);
+
+		//return new JwtSecurityTokenHandler().WriteToken(accessToken);
+
+
+		//----------------------
+
+
+		var claims = new List<Claim>
+			{
+				new Claim(ClaimsIdentity.DefaultNameClaimType, email),
+				new Claim("UserId", id.ToString())
+			};
+
+		// Add each role as a separate claim
+		foreach (var role in roles)
 		{
-			new Claim (ClaimsIdentity.DefaultNameClaimType, email),
-			new Claim(ClaimsIdentity.DefaultRoleClaimType, string.Join(",", roles)),
-			new Claim("UserId", id.ToString())
-		}.Concat(userClaims);
+			claims.Add(new Claim(ClaimTypes.Role, role));
+		}
+
+		// Add any additional user claims
+		claims.AddRange(userClaims);
 
 		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.Secret));
-
 		var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
 		var accessToken = new JwtSecurityToken
 		(
 			issuer: _jwtConfig.Issuer,
@@ -37,7 +69,6 @@ public class TokenService : ITokenService
 			signingCredentials: signingCredentials,
 			claims: claims
 		);
-
 		return new JwtSecurityTokenHandler().WriteToken(accessToken);
 	}
 
