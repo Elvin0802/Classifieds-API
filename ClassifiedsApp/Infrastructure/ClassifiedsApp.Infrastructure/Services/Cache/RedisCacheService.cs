@@ -1,7 +1,6 @@
 ﻿using ClassifiedsApp.Core.Dtos.Cache;
 using ClassifiedsApp.Core.Interfaces.Services.Cache;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;

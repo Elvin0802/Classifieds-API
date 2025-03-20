@@ -27,11 +27,12 @@ public class GetAdByIdQueryHandler : IRequestHandler<GetAdByIdQuery, GetAdByIdRe
 		var item = await _readRepository.GetAdByIdWithIncludesAsync(request.Id, true);
 
 		item.ViewCount++;
+
 		_writeRepository.Update(item);
+
 		await _writeRepository.SaveAsync();
 
-		if (item is null)
-			return null!;
+		if (item is null) return new() { AdDto = null };
 
 		return new()
 		{
@@ -50,6 +51,8 @@ public class GetAdByIdQueryHandler : IRequestHandler<GetAdByIdQuery, GetAdByIdRe
 				MainCategory =  _mapper.Map<MainCategoryDto>(item.MainCategory),
 				Location = _mapper.Map<LocationDto>(item.Location),
 				AppUser = _mapper.Map<AppUserDto>(item.AppUser),
+
+				IsOwner = item.AppUserId == request.CurrentUserId,
 
 				Images = item.Images.Select(img => _mapper.Map<AdImageDto>(img)).ToList(),
 				AdSubCategoryValues = item.SubCategoryValues.Select(ascv => _mapper.Map<AdSubCategoryValueDto>(ascv)).ToList(),

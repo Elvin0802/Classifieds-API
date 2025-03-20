@@ -3,8 +3,6 @@ using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Core.Interfaces.Repositories.Locations;
 using ClassifiedsApp.Core.Interfaces.Services.Cache;
 using MediatR;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace ClassifiedsApp.Application.Features.Commands.Locations.CreateLocation;

@@ -63,6 +63,12 @@ public class AdsController : ControllerBase
 	{
 		try
 		{
+			var userIdClaim = User.FindFirst("UserId")?.Value;
+
+			if (!(string.IsNullOrWhiteSpace(userIdClaim)))
+				if (Guid.TryParse(userIdClaim, out var userId))
+					query!.CurrentUserId = userId;
+
 			return Ok(await _mediator.Send(query));
 		}
 		catch (Exception ex)

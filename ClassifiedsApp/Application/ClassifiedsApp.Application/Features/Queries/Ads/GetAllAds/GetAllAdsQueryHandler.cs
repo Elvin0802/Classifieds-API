@@ -77,12 +77,8 @@ public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQu
 			query = query.Where(ad => ad.LocationId == request.LocationId.Value);
 
 		if (request.SubCategoryValues is not null && request.SubCategoryValues.Count > 0)
-		{
 			foreach (var v in request.SubCategoryValues)
-			{
 				query = query.Where(ad => ad.SubCategoryValues.Any(scv => scv.SubCategoryId == v.Key && scv.Value == v.Value));
-			}
-		}
 
 		// Apply sorting
 		query = ApplySorting(query, request.SortBy, request.IsDescending);

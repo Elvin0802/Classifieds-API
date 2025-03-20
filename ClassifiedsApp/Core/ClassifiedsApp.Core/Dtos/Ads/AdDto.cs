@@ -19,4 +19,6 @@ public class AdDto : BaseEntityDto
 	public AppUserDto AppUser { get; set; }
 	public IList<AdImageDto> Images { get; set; }
 	public IList<AdSubCategoryValueDto> AdSubCategoryValues { get; set; }
+
+	public bool IsOwner = false;
 }
