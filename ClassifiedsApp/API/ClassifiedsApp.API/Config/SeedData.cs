@@ -20,7 +20,7 @@ public static class SeedData
 
 		if (adminUser is null)
 		{
-			var admin = new AppUser
+			var admin = new AppUser()
 			{
 				UserName = adminEmail,
 				Email = adminEmail,

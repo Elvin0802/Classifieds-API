@@ -1,6 +1,9 @@
 ﻿using ClassifiedsApp.Application.Features.Commands.Auth.Register;
+using ClassifiedsApp.Application.Features.Commands.Users.ChangePassword;
 using ClassifiedsApp.Application.Features.Commands.Users.UpdatePassword;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClassifiedsApp.API.Controllers;
@@ -24,6 +27,13 @@ public class UsersController : ControllerBase
 
 	[HttpPost("update-password")]
 	public async Task<ActionResult<UpdatePasswordCommandResponse>> UpdatePassword([FromBody] UpdatePasswordCommand command)
+	{
+		return Ok(await _mediator.Send(command));
+	}
+
+	[HttpPost("change-password")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
+	public async Task<ActionResult<ChangePasswordCommandResponse>> ChangePassword([FromBody] ChangePasswordCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}

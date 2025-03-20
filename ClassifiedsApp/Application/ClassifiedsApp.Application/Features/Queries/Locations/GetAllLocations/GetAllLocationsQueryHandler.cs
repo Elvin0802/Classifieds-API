@@ -44,12 +44,14 @@ public class GetAllLocationsQueryHandler : IRequestHandler<GetAllLocationsQuery,
 							  .Select(p => _mapper.Map<LocationDto>(p))
 							  .ToListAsync(cancellationToken);
 
+		await Task.Delay(1200, cancellationToken);
+
 		return new()
 		{
 			Items = list,
-			PageNumber = request.PageNumber,
-			PageSize = request.PageSize,
-			TotalCount = totalCount
+			PageNumber = 1,
+			PageSize = list.Count,
+			TotalCount = list.Count
 		};
 	}
 

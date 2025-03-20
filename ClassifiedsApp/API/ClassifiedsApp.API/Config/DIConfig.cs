@@ -2,6 +2,7 @@
 using ClassifiedsApp.Core.Dtos.Auth.Token;
 using ClassifiedsApp.Core.Interfaces.Services.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
@@ -18,48 +19,54 @@ public static class DIConfig
 			setup.SwaggerDoc("v1",
 				new OpenApiInfo
 				{
-					Title = "Invoicer API",
-					Version = "v: 1.0"
+					Title = "ClassifiedsApp API",
+					Version = "v1.0"
 				});
 
-			setup.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+			setup.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 			{
 				Name = "Authorization",
 				Type = SecuritySchemeType.ApiKey,
 				Scheme = "Bearer",
 				BearerFormat = "JWT",
 				In = ParameterLocation.Header,
-				Description = "\nExample: \"Bearer key-key-key-key\""
+				Description = "JWT Authorization header using the Bearer scheme.\r\n\r\n" +
+							 "Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\n" +
+							 "Example: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\""
 			});
 
 			setup.AddSecurityRequirement(new OpenApiSecurityRequirement
 			{
 				{
 					new OpenApiSecurityScheme
+					{
+						Reference = new OpenApiReference
 						{
-							Reference = new OpenApiReference
-								{
-									Type = ReferenceType.SecurityScheme,
-									Id = "Bearer"
-								}
-							}, new string[]{}
+							Type = ReferenceType.SecurityScheme,
+							Id = "Bearer"
 						}
-				});
+					},
+					Array.Empty<string>()
+				}
+			});
 		});
 
 		return services;
 	}
 
 	public static IServiceCollection AuthenticationAndAuthorization(
-					this IServiceCollection services,
-					IConfiguration configuration)
+		this IServiceCollection services,
+		IConfiguration configuration)
 	{
+		services.Configure<IdentityOptions>(options =>
+		{
+			options.ClaimsIdentity.RoleClaimType = ClaimTypes.Role;
+		});
+
 		services.AddScoped<ITokenService, TokenService>();
 
 		var jwtConfig = new JwtConfigDto();
-
 		configuration.Bind("JWT", jwtConfig);
-
 		services.AddSingleton(jwtConfig);
 
 		services.AddAuthentication(options =>
@@ -70,19 +77,9 @@ public static class DIConfig
 		})
 		.AddJwtBearer(options =>
 		{
-			options.Events = new JwtBearerEvents
-			{
-				OnMessageReceived = context =>
-				{
-					if (context.Request.Cookies.ContainsKey("accessToken"))
-						context.Token = context.Request.Cookies["accessToken"];
-
-					return Task.CompletedTask;
-				}
-			};
-
-			options.TokenValidationParameters =
-			new TokenValidationParameters
+			options.SaveToken = true;
+			options.RequireHttpsMetadata = false;
+			options.TokenValidationParameters = new TokenValidationParameters
 			{
 				ValidateIssuer = true,
 				ValidateAudience = true,
@@ -91,11 +88,36 @@ public static class DIConfig
 				ClockSkew = TimeSpan.Zero,
 				ValidIssuer = jwtConfig.Issuer,
 				ValidAudience = jwtConfig.Audience,
-				IssuerSigningKey
-				= new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Secret)),
-				RoleClaimType = ClaimsIdentity.DefaultRoleClaimType
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Secret)),
+				RoleClaimType = ClaimTypes.Role
+			};
+
+			options.Events = new JwtBearerEvents
+			{
+				OnMessageReceived = context =>
+				{
+					if (context.Request.Headers.ContainsKey("Authorization"))
+					{
+						var header = context.Request.Headers["Authorization"].ToString();
+						if (header.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+						{
+							context.Token = header.Substring("Bearer ".Length).Trim();
+						}
+					}
+					return Task.CompletedTask;
+				},
+				OnAuthenticationFailed = context =>
+				{
+					if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+					{
+						context.Response.Headers.Append("Token-Expired", "true");
+					}
+					return Task.CompletedTask;
+				}
 			};
 		});
+
+		services.AddAuthorization();
 
 		return services;
 	}

@@ -6,6 +6,7 @@ using ClassifiedsApp.Application.Features.Commands.Users.UnselectAd;
 using ClassifiedsApp.Application.Features.Queries.Ads.GetAdById;
 using ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,23 +24,16 @@ public class AdsController : ControllerBase
 	}
 
 	[HttpPost("[action]")]
-	[Authorize]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
 	public async Task<ActionResult<CreateAdCommandResponse>> Create([FromBody] CreateAdCommand command)
 	{
-		var userId = Guid.Parse(User.FindFirst("UserId")?.Value!);
+		command.AppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!);
 
-		if (userId == Guid.Empty)
-			return Unauthorized();
-
-		command.AppUserId = userId;
-
-		var result = await _mediator.Send(command);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("[action]")]
-	public async Task<ActionResult<GetAllAdsQueryResponse>> GetAll([FromBody] GetAllAdsQuery? command)
+	public async Task<ActionResult<GetAllAdsQueryResponse>> GetAll([FromBody] GetAllAdsQuery? query)
 	{
 		try
 		{
@@ -47,9 +41,9 @@ public class AdsController : ControllerBase
 
 			if (!(string.IsNullOrWhiteSpace(userIdClaim)))
 				if (Guid.TryParse(userIdClaim, out var userId))
-					command!.CurrentAppUserId = userId;
+					query!.CurrentAppUserId = userId;
 
-			return Ok(await _mediator.Send(command!));
+			return Ok(await _mediator.Send(query!));
 		}
 		catch (Exception ex)
 		{
@@ -65,13 +59,11 @@ public class AdsController : ControllerBase
 	}
 
 	[HttpGet("[action]")]
-	public async Task<ActionResult<GetAdByIdResponse>> GetById([FromQuery] GetAdByIdQuery command)
+	public async Task<ActionResult<GetAdByIdResponse>> GetById([FromQuery] GetAdByIdQuery query)
 	{
 		try
 		{
-			var result = await _mediator.Send(command);
-
-			return Ok(result);
+			return Ok(await _mediator.Send(query));
 		}
 		catch (Exception ex)
 		{
@@ -87,44 +79,32 @@ public class AdsController : ControllerBase
 	}
 
 	[HttpGet("[action]")]
-	[Authorize]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
 	public async Task<ActionResult<DeleteAdCommandResponse>> Delete([FromQuery] DeleteAdCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("[action]")]
-	[Authorize]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
 	public async Task<ActionResult<SelectAdCommandResponse>> SelectAd([FromBody] SelectAdCommand command)
 	{
-		var userId = Guid.Parse(User.FindFirst("UserId")?.Value!);
-
-		if (userId == Guid.Empty)
-			return Unauthorized();
-
-		command.SelectorAppUserId = userId;
-
-		var result = await _mediator.Send(command);
-
-		return Ok(result);
-	}
-
-	[HttpPost("[action]")]
-	[Authorize]
-	public async Task<ActionResult<UnselectAdCommandResponse>> UnselectAd([FromBody] UnselectAdCommand command)
-	{
-		var userId = Guid.Parse(User.FindFirst("UserId")?.Value!);
-
-		if (userId == Guid.Empty)
-			return Unauthorized();
-
-		command.SelectorAppUserId = userId;
+		command.SelectorAppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!);
 
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("[action]")]
-	[Authorize]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
+	public async Task<ActionResult<UnselectAdCommandResponse>> UnselectAd([FromBody] UnselectAdCommand command)
+	{
+		command.SelectorAppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!);
+
+		return Ok(await _mediator.Send(command));
+	}
+
+	[HttpPost("[action]")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
 	public async Task<ActionResult<UpdateAdCommandResponse>> Update([FromBody] UpdateAdCommand command)
 	{
 		return Ok(await _mediator.Send(command));

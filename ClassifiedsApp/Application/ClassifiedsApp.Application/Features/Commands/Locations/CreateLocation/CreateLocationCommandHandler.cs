@@ -3,6 +3,8 @@ using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Core.Interfaces.Repositories.Locations;
 using ClassifiedsApp.Core.Interfaces.Services.Cache;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace ClassifiedsApp.Application.Features.Commands.Locations.CreateLocation;
@@ -42,7 +44,8 @@ public class CreateLocationCommandHandler : IRequestHandler<CreateLocationComman
 			await _repository.AddAsync(location);
 			await _repository.SaveAsync();
 
-			await _cacheService.RemoveByPrefixAsync("locations_");
+			//await _cacheService.RemoveByPrefixAsync("locations_");
+			await _cacheService.RemoveByPrefixAsync($":user:anonymous:locations_");
 
 			_logger.LogInformation("Location created successfully for City: {City}, Country: {Country}", request.City, request.Country);
 

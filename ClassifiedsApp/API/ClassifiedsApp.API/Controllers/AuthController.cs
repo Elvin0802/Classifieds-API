@@ -2,9 +2,10 @@
 using ClassifiedsApp.Application.Features.Commands.Auth.Login;
 using ClassifiedsApp.Application.Features.Commands.Auth.PasswordReset;
 using ClassifiedsApp.Application.Features.Commands.Auth.RefreshTokenLogin;
-using ClassifiedsApp.Core.Dtos.Auth.Token;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClassifiedsApp.API.Controllers;
@@ -14,38 +15,30 @@ namespace ClassifiedsApp.API.Controllers;
 public class AuthController : ControllerBase
 {
 	readonly IMediator _mediator;
-	readonly JwtConfigDto _jwtConfig;
 
-	public AuthController(IMediator mediator, JwtConfigDto jwtConfig)
+	public AuthController(IMediator mediator)
 	{
 		_mediator = mediator;
-		_jwtConfig = jwtConfig;
 	}
 
 	[HttpPost("[action]")]
-	public async Task<IActionResult> Login(LoginCommand lc)
+	public async Task<IActionResult> Login(LoginCommand command)
 	{
 		try
 		{
-			LoginCommandResponse response = await _mediator.Send(lc);
+			LoginCommandResponse response = await _mediator.Send(command);
 
-			Response.Cookies.Append("accessToken", response.AuthToken.AccessToken, new CookieOptions
-			{
-				HttpOnly = true,
-				Secure = false,
-				SameSite = SameSiteMode.Lax,
-				Expires = DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration)
-			});
+			Response.Headers.Append("Authorization", $"Bearer {response.AuthToken.AccessToken}");
 
 			Response.Cookies.Append("refreshToken", response.AuthToken.RefreshToken!, new CookieOptions
 			{
 				HttpOnly = true,
 				Secure = false,
 				SameSite = SameSiteMode.Lax,
-				Expires = response.AuthToken.RefreshTokenExpiresAt
+				Expires = response.AuthToken.RefreshTokenExpiresAt,
 			});
 
-			return Ok();
+			return Ok(new { token = response.AuthToken.AccessToken });
 		}
 		catch (ValidationException ex)
 		{
@@ -63,29 +56,23 @@ public class AuthController : ControllerBase
 	{
 		try
 		{
-			var refreshToken = Request.Cookies["refreshToken"]!;
+			var refreshToken = Request.Cookies["refreshToken"];
+			if (string.IsNullOrEmpty(refreshToken))
+				return Unauthorized(new { Error = "Refresh token not found." });
 
-			if (refreshToken is null) return Unauthorized("No Refresh Token");
+			RefreshTokenLoginCommandResponse response = await _mediator.Send(new RefreshTokenLoginCommand { RefreshToken = refreshToken });
 
-			RefreshTokenLoginCommandResponse response = await _mediator.Send(new RefreshTokenLoginCommand() { RefreshToken = refreshToken });
-
-			Response.Cookies.Append("accessToken", response.AuthToken.AccessToken, new CookieOptions
-			{
-				HttpOnly = true,
-				Secure = false,
-				SameSite = SameSiteMode.Lax,
-				Expires = DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration)
-			});
+			Response.Headers.Append("Authorization", $"Bearer {response.AuthToken.AccessToken}");
 
 			Response.Cookies.Append("refreshToken", response.AuthToken.RefreshToken!, new CookieOptions
 			{
 				HttpOnly = true,
 				Secure = false,
 				SameSite = SameSiteMode.Lax,
-				Expires = response.AuthToken.RefreshTokenExpiresAt
+				Expires = response.AuthToken.RefreshTokenExpiresAt,
 			});
 
-			return Ok();
+			return Ok(new { token = response.AuthToken.AccessToken });
 		}
 		catch (Exception ex)
 		{
@@ -94,12 +81,19 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpPost("[action]")]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
 	public async Task<IActionResult> Logout()
 	{
-		Response.Cookies.Delete("accessToken");
-		Response.Cookies.Delete("refreshToken");
+		Response.Cookies.Delete("refreshToken", new CookieOptions
+		{
+			HttpOnly = true,
+			Secure = false,
+			SameSite = SameSiteMode.Lax,
+		});
 
-		return Ok();
+		Response.Headers.Append("Authorization", "");
+
+		return Ok(new { Message = "Log out success." });
 	}
 
 	[HttpPost("reset-password")]
@@ -109,7 +103,7 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpPost("confirm-reset-token")]
-	public async Task<ActionResult<ConfirmResetTokenCommandResponse>> VerifyResetToken([FromBody] ConfirmResetTokenCommand command)
+	public async Task<ActionResult<ConfirmResetTokenCommandResponse>> ConfirmResetToken([FromBody] ConfirmResetTokenCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}

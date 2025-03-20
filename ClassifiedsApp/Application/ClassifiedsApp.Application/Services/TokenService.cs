@@ -1,4 +1,5 @@
-﻿using ClassifiedsApp.Core.Dtos.Auth.Token;
+﻿using ClassifiedsApp.Application.Common.Helpers;
+using ClassifiedsApp.Core.Dtos.Auth.Token;
 using ClassifiedsApp.Core.Interfaces.Services.Auth;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,62 +19,36 @@ public class TokenService : ITokenService
 
 	public string GenerateAccessToken(Guid id, string email, IEnumerable<string> roles, IEnumerable<Claim> userClaims)
 	{
-		//var claims = new[]
-		//{
-		//	new Claim (ClaimsIdentity.DefaultNameClaimType, email),
-		//	new Claim(ClaimsIdentity.DefaultRoleClaimType, string.Join(",", roles)),
-		//	new Claim("UserId", id.ToString())
-		//}.Concat(userClaims);
-
-		//var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.Secret));
-
-		//var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-		//var accessToken = new JwtSecurityToken
-		//(
-		//	issuer: _jwtConfig.Issuer,
-		//	audience: _jwtConfig.Audience,
-		//	expires: DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration),
-		//	signingCredentials: signingCredentials,
-		//	claims: claims
-		//);
-
-		//return new JwtSecurityTokenHandler().WriteToken(accessToken);
-
-
-		//----------------------
-
-
 		var claims = new List<Claim>
-			{
-				new Claim(ClaimsIdentity.DefaultNameClaimType, email),
-				new Claim("UserId", id.ToString())
-			};
-
-		// Add each role as a separate claim
-		foreach (var role in roles)
 		{
-			claims.Add(new Claim(ClaimTypes.Role, role));
-		}
+			new Claim(JwtRegisteredClaimNames.Sub, id.ToString()),
+			new Claim(JwtRegisteredClaimNames.Email, email),
+			new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+			new Claim("UserId", id.ToString())
+		};
 
-		// Add any additional user claims
+		foreach (var role in roles)
+			claims.Add(new Claim(ClaimTypes.Role, role));
+
 		claims.AddRange(userClaims);
 
 		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.Secret));
 		var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-		var accessToken = new JwtSecurityToken
-		(
+
+		var token = new JwtSecurityToken(
 			issuer: _jwtConfig.Issuer,
 			audience: _jwtConfig.Audience,
+			claims: claims,
 			expires: DateTime.UtcNow.AddMinutes(_jwtConfig.Expiration),
-			signingCredentials: signingCredentials,
-			claims: claims
+			signingCredentials: signingCredentials
 		);
-		return new JwtSecurityTokenHandler().WriteToken(accessToken);
+
+		return new JwtSecurityTokenHandler().WriteToken(token);
 	}
 
 	public string GenerateRefreshToken()
 	{
-		return (Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N")).ToLower();
+		return (Convert.ToBase64String(Guid.NewGuid().ToByteArray())).UrlEncode() +
+			   (Convert.ToBase64String(Guid.NewGuid().ToByteArray())).UrlEncode();
 	}
 }

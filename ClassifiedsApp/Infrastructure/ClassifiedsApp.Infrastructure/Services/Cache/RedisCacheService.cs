@@ -1,6 +1,7 @@
 ﻿using ClassifiedsApp.Core.Dtos.Cache;
 using ClassifiedsApp.Core.Interfaces.Services.Cache;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
@@ -34,11 +35,11 @@ namespace ClassifiedsApp.Infrastructure.Services.Cache
 			var cachedValue = await GetAsync<T>(key);
 			if (cachedValue != null)
 			{
-				_logger.LogDebug("Cache hit for key: {Key}", key);
+				_logger.LogError("Cache hit for key: {Key}", key);
 				return cachedValue;
 			}
 
-			_logger.LogDebug("Cache miss for key: {Key}", key);
+			_logger.LogError("Cache miss for key: {Key}", key);
 			var result = await factory();
 			await SetAsync(key, result, expiration);
 			return result;
@@ -77,7 +78,7 @@ namespace ClassifiedsApp.Infrastructure.Services.Cache
 
 				var serializedValue = JsonSerializer.SerializeToUtf8Bytes(value);
 				await _distributedCache.SetAsync(key, serializedValue, options);
-				_logger.LogDebug("Cache set for key: {Key}", key);
+				_logger.LogError("Cache set for key: {Key}", key);
 			}
 			catch (Exception ex)
 			{
@@ -102,7 +103,8 @@ namespace ClassifiedsApp.Infrastructure.Services.Cache
 
 		public async Task RemoveByPrefixAsync(string prefix)
 		{
-			prefix = BuildUserSpecificKey(prefix);
+			// helelik remove da user id ya ehtiyac yoxdu. sonra elave et.
+			//prefix = BuildUserSpecificKey(prefix);
 
 			try
 			{
@@ -120,7 +122,7 @@ namespace ClassifiedsApp.Infrastructure.Services.Cache
 				var keysToDelete = new List<RedisKey>();
 				var pattern = $"{_cacheConfig.InstanceName}{prefix}*";
 
-				_logger.LogDebug("Scanning for keys with pattern: {Pattern}", pattern);
+				_logger.LogError("Scanning for keys with pattern: {Pattern}", pattern);
 
 				foreach (var key in server.Keys(pattern: pattern))
 				{
@@ -129,17 +131,17 @@ namespace ClassifiedsApp.Infrastructure.Services.Cache
 
 				if (keysToDelete.Count == 0)
 				{
-					_logger.LogDebug("No keys found matching pattern: {Pattern}", pattern);
+					_logger.LogError("No keys found matching pattern: {Pattern}", pattern);
 					return;
 				}
 
-				_logger.LogInformation("Found {Count} keys to delete with prefix: {Prefix}", keysToDelete.Count, prefix);
+				_logger.LogError("Found {Count} keys to delete with prefix: {Prefix}", keysToDelete.Count, prefix);
 
 				// Delete each key individually
 				foreach (var key in keysToDelete)
 				{
 					await database.KeyDeleteAsync(key);
-					_logger.LogDebug("Deleted key: {Key}", key);
+					_logger.LogError("Deleted key: {Key}", key);
 				}
 			}
 			catch (Exception ex)
@@ -176,12 +178,18 @@ namespace ClassifiedsApp.Infrastructure.Services.Cache
 
 		private string BuildUserSpecificKey(string key)
 		{
+
+			_logger.LogError("Build User Specific Key: {Key}", key);
+
 			var userId = _contextAccessor.HttpContext!.User.FindFirst("UserId")?.Value!;
 
-			if (string.IsNullOrEmpty(userId))
-				return key;
+			_logger.LogError("After accessor, User id : {userId}", userId);
 
-			return $"user:{userId}:{key}";
+			if (string.IsNullOrEmpty(userId))
+				return $":user:anonymous:{key}";
+
+			_logger.LogError("After accessor with not null , User id : {userId}", userId);
+			return $":user:{userId}:{key}";
 		}
 	}
 }

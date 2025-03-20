@@ -8,6 +8,8 @@ using ClassifiedsApp.Application.Features.Queries.Categories.GetCategoryById;
 using ClassifiedsApp.Application.Features.Queries.Categories.GetMainCategoryById;
 using ClassifiedsApp.Application.Features.Queries.Categories.GetSubCategoryById;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClassifiedsApp.API.Controllers;
@@ -26,27 +28,22 @@ public class CategoriesController : ControllerBase
 	#region Category Section
 
 	[HttpPost("create/category")]
-	public async Task<ActionResult<CreateCategoryCommandResponse>> Create([FromBody] CreateCategoryCommand createDto)
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+	public async Task<ActionResult<CreateCategoryCommandResponse>> Create([FromBody] CreateCategoryCommand command)
 	{
-		var result = await _mediator.Send(createDto);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpGet("all/category")]
-	public async Task<ActionResult<GetAllCategoriesQueryResponse>> GetAll([FromQuery] GetAllCategoriesQuery getAllDto)
+	public async Task<ActionResult<GetAllCategoriesQueryResponse>> GetAll([FromQuery] GetAllCategoriesQuery query)
 	{
-		var result = await _mediator.Send(getAllDto);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(query));
 	}
 
 	[HttpGet("byId/category")]
-	public async Task<ActionResult<GetCategoryByIdQueryResponse>> GetById([FromQuery] GetCategoryByIdQuery getByIdDto)
+	public async Task<ActionResult<GetCategoryByIdQueryResponse>> GetById([FromQuery] GetCategoryByIdQuery query)
 	{
-		var result = await _mediator.Send(getByIdDto);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(query));
 	}
 
 	#endregion
@@ -54,27 +51,22 @@ public class CategoriesController : ControllerBase
 	#region Main Category Section
 
 	[HttpPost("create/main-category")]
-	public async Task<ActionResult<CreateMainCategoryCommandResponse>> Create([FromBody] CreateMainCategoryCommand createDto)
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+	public async Task<ActionResult<CreateMainCategoryCommandResponse>> Create([FromBody] CreateMainCategoryCommand command)
 	{
-		var result = await _mediator.Send(createDto);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpGet("all/main-category")]
-	public async Task<ActionResult<GetAllMainCategoriesQueryResponse>> GetAll([FromQuery] GetAllMainCategoriesQuery getAllDto)
+	public async Task<ActionResult<GetAllMainCategoriesQueryResponse>> GetAll([FromQuery] GetAllMainCategoriesQuery query)
 	{
-		var result = await _mediator.Send(getAllDto);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(query));
 	}
 
 	[HttpGet("byId/main-category")]
-	public async Task<ActionResult<GetMainCategoryByIdQueryResponse>> GetById([FromQuery] GetMainCategoryByIdQuery getByIdDto)
+	public async Task<ActionResult<GetMainCategoryByIdQueryResponse>> GetById([FromQuery] GetMainCategoryByIdQuery query)
 	{
-		var result = await _mediator.Send(getByIdDto);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(query));
 	}
 
 	#endregion
@@ -82,27 +74,22 @@ public class CategoriesController : ControllerBase
 	#region Sub Category Section
 
 	[HttpPost("create/sub-category")]
-	public async Task<ActionResult<CreateSubCategoryCommandResponse>> Create([FromBody] CreateSubCategoryCommand createDto)
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+	public async Task<ActionResult<CreateSubCategoryCommandResponse>> Create([FromBody] CreateSubCategoryCommand command)
 	{
-		var result = await _mediator.Send(createDto);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpGet("all/sub-category")]
-	public async Task<ActionResult<GetAllSubCategoriesQueryResponse>> GetAll([FromQuery] GetAllSubCategoriesQuery getAllDto)
+	public async Task<ActionResult<GetAllSubCategoriesQueryResponse>> GetAll([FromQuery] GetAllSubCategoriesQuery query)
 	{
-		var result = await _mediator.Send(getAllDto);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(query));
 	}
 
 	[HttpGet("byId/sub-category")]
-	public async Task<ActionResult<GetSubCategoryByIdQueryResponse>> GetById([FromQuery] GetSubCategoryByIdQuery getByIdDto)
+	public async Task<ActionResult<GetSubCategoryByIdQueryResponse>> GetById([FromQuery] GetSubCategoryByIdQuery query)
 	{
-		var result = await _mediator.Send(getByIdDto);
-
-		return Ok(result);
+		return Ok(await _mediator.Send(query));
 	}
 
 	#endregion

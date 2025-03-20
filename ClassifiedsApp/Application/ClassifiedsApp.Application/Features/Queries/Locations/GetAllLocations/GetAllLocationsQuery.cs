@@ -13,5 +13,5 @@ public class GetAllLocationsQuery : IRequest<GetAllLocationsQueryResponse>, ICac
 
 	// caching
 	public string CacheKey => $"locations_page_{PageNumber}_size_{PageSize}_sort_{SortBy ?? "default"}_{(IsDescending ? "desc" : "asc")}";
-	public TimeSpan CacheTime => TimeSpan.FromSeconds(40); // seconds for test / change to minute.
+	public TimeSpan CacheTime => TimeSpan.FromSeconds(20); // seconds for test / change to minute.
 }

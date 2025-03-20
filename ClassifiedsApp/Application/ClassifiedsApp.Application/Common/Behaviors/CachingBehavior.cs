@@ -27,13 +27,13 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
 			var cacheKey = cacheableQuery.CacheKey;
 
-			_logger.LogDebug("Checking cache for key: {CacheKey}", cacheKey);
+			_logger.LogError("Checking cache for key: {CacheKey}", cacheKey);
 
 			response = await _cacheService.GetOrSetAsync(
 				cacheKey,
 				async () =>
 				{
-					_logger.LogDebug("Cache miss for key: {CacheKey}", cacheKey);
+					_logger.LogError("Cache miss for key: {CacheKey}", cacheKey);
 					return await next();
 				},
 				cacheableQuery.CacheTime);
