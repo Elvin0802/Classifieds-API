@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ClassifiedsApp.Core.Dtos.Auth.Users;
+using ClassifiedsApp.Application.Dtos.Auth.Users;
 using ClassifiedsApp.Core.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

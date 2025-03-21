@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Dtos.Ads;
+﻿using ClassifiedsApp.Application.Dtos.Ads;
 
 namespace ClassifiedsApp.Application.Features.Queries.Users.GetAllSelectedAds;
 

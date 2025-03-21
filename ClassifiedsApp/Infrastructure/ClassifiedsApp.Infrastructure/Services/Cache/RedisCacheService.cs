@@ -1,5 +1,5 @@
-﻿using ClassifiedsApp.Core.Dtos.Cache;
-using ClassifiedsApp.Core.Interfaces.Services.Cache;
+﻿using ClassifiedsApp.Application.Dtos.Cache;
+using ClassifiedsApp.Application.Interfaces.Services.Cache;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;

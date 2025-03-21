@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Interfaces.Services.Cache;
+﻿using ClassifiedsApp.Application.Interfaces.Services.Cache;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

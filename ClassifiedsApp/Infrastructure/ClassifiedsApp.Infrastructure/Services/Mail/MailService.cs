@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Interfaces.Services.Mail;
+﻿using ClassifiedsApp.Application.Interfaces.Services.Mail;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;

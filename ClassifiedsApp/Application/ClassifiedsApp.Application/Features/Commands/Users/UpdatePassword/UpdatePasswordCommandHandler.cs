@@ -1,18 +1,16 @@
-﻿using ClassifiedsApp.Application.Common.Helpers;
-using ClassifiedsApp.Core.Entities;
+﻿using ClassifiedsApp.Application.Interfaces.Services.Users;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace ClassifiedsApp.Application.Features.Commands.Users.UpdatePassword;
 
 public class UpdatePasswordCommandHandler : IRequestHandler<UpdatePasswordCommand, UpdatePasswordCommandResponse>
 {
-	readonly UserManager<AppUser> _userManager;
+	readonly IUserService _userService;
 
-	public UpdatePasswordCommandHandler(UserManager<AppUser> userManager)
+	public UpdatePasswordCommandHandler(IUserService userService)
 	{
-		_userManager = userManager;
+		_userService = userService;
 	}
 
 	public async Task<UpdatePasswordCommandResponse> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
@@ -22,22 +20,14 @@ public class UpdatePasswordCommandHandler : IRequestHandler<UpdatePasswordComman
 			if (!request.Password.Equals(request.PasswordConfirm))
 				throw new ValidationException("Please verify the password exactly.");
 
-			AppUser? user = await _userManager.FindByIdAsync(request.UserId) ??
-							throw new ArgumentNullException(nameof(request), $"User with this id: {request.UserId} , Not Found.");
-
-			request.ResetToken = request.ResetToken.UrlDecode();
-
-			var result = await _userManager.ResetPasswordAsync(user, request.ResetToken, request.Password);
-
-			if (result.Succeeded)
-				await _userManager.UpdateSecurityStampAsync(user);
+			if (!await _userService.UpdatePasswordAsync(request.UserId, request.ResetToken, request.Password))
+				throw new Exception("Password Not Updated.");
 
 			return new()
 			{
-				IsSucceeded = result.Succeeded,
+				IsSucceeded = true,
 				Message = "Password updated."
 			};
-
 		}
 		catch (Exception ex)
 		{

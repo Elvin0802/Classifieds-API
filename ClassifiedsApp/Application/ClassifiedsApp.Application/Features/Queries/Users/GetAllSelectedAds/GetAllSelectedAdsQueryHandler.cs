@@ -1,5 +1,5 @@
-﻿using ClassifiedsApp.Core.Dtos.Ads;
-using ClassifiedsApp.Core.Interfaces.Repositories.Users;
+﻿using ClassifiedsApp.Application.Dtos.Ads;
+using ClassifiedsApp.Application.Interfaces.Repositories.Users;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

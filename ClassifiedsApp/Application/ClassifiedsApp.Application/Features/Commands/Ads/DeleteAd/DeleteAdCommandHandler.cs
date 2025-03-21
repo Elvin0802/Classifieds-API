@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Interfaces.Repositories.Ads;
+﻿using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Ads.DeleteAd;

@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Application\ClassifiedsApp.Application\ClassifiedsApp.Application.csproj" />
     <ProjectReference Include="..\..\Core\ClassifiedsApp.Core\ClassifiedsApp.Core.csproj" />
   </ItemGroup>
 

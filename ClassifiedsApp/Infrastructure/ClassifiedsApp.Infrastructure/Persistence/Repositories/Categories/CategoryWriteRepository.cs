@@ -1,5 +1,5 @@
-﻿using ClassifiedsApp.Core.Entities;
-using ClassifiedsApp.Core.Interfaces.Repositories.Categories;
+﻿using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
+using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Infrastructure.Persistence.Context;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.Common;
 

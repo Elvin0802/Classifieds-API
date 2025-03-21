@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using ClassifiedsApp.Core.Dtos.AdImages;
-using ClassifiedsApp.Core.Dtos.Ads;
-using ClassifiedsApp.Core.Dtos.Auth.Users;
-using ClassifiedsApp.Core.Dtos.Categories;
-using ClassifiedsApp.Core.Dtos.Locations;
-using ClassifiedsApp.Core.Interfaces.Repositories.Ads;
+using ClassifiedsApp.Application.Dtos.AdImages;
+using ClassifiedsApp.Application.Dtos.Ads;
+using ClassifiedsApp.Application.Dtos.Auth.Users;
+using ClassifiedsApp.Application.Dtos.Categories;
+using ClassifiedsApp.Application.Dtos.Locations;
+using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Queries.Ads.GetAdById;

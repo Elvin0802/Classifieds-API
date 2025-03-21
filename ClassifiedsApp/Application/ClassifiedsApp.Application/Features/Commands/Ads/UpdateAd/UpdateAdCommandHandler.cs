@@ -1,5 +1,5 @@
-﻿using ClassifiedsApp.Core.Entities;
-using ClassifiedsApp.Core.Interfaces.Repositories.Ads;
+﻿using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
+using ClassifiedsApp.Core.Entities;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Ads.UpdateAd;

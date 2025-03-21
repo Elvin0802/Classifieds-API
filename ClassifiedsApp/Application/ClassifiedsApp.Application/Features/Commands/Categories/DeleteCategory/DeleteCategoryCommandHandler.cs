@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Interfaces.Repositories.Categories;
+﻿using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Categories.DeleteCategory;

@@ -1,5 +1,5 @@
-﻿using ClassifiedsApp.Core.Entities.Common;
-using ClassifiedsApp.Core.Interfaces.Repositories.Common;
+﻿using ClassifiedsApp.Application.Interfaces.Repositories.Common;
+using ClassifiedsApp.Core.Entities.Common;
 using ClassifiedsApp.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;

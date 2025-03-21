@@ -1,6 +1,6 @@
-﻿using ClassifiedsApp.Application.Services;
-using ClassifiedsApp.Core.Dtos.Auth.Token;
-using ClassifiedsApp.Core.Interfaces.Services.Auth;
+﻿using ClassifiedsApp.Application.Dtos.Auth.Token;
+using ClassifiedsApp.Application.Interfaces.Services.Auth;
+using ClassifiedsApp.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;

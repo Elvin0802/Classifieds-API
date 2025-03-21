@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Dtos.Auth.Token;
+﻿using ClassifiedsApp.Application.Dtos.Auth.Token;
 
 namespace ClassifiedsApp.Application.Features.Commands.Auth.RefreshTokenLogin;
 

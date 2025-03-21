@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Dtos.Auth.Users;
+﻿using ClassifiedsApp.Application.Dtos.Auth.Users;
 
 namespace ClassifiedsApp.Application.Features.Queries.Users.GetUserData;
 

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ClassifiedsApp.Core.Dtos.AdImages;
+using ClassifiedsApp.Application.Dtos.AdImages;
 using ClassifiedsApp.Core.Entities;
 
 namespace ClassifiedsApp.Application.Common.Mappings;

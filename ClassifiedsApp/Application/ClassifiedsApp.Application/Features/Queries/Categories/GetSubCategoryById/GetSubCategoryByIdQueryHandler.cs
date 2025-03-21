@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using ClassifiedsApp.Core.Dtos.Categories;
-using ClassifiedsApp.Core.Interfaces.Repositories.Categories;
+using ClassifiedsApp.Application.Dtos.Categories;
+using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Queries.Categories.GetSubCategoryById;

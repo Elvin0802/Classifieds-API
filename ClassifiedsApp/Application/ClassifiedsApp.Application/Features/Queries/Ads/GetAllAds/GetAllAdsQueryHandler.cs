@@ -1,7 +1,7 @@
-﻿using ClassifiedsApp.Core.Dtos.Ads;
+﻿using ClassifiedsApp.Application.Dtos.Ads;
+using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
 using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Core.Enums;
-using ClassifiedsApp.Core.Interfaces.Repositories.Ads;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

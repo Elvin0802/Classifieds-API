@@ -1,39 +1,22 @@
-﻿using ClassifiedsApp.Application.Common.Helpers;
-using ClassifiedsApp.Core.Entities;
+﻿using ClassifiedsApp.Application.Interfaces.Services.Auth;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace ClassifiedsApp.Application.Features.Commands.Auth.ConfirmResetToken;
 
 public class ConfirmResetTokenCommandHandler : IRequestHandler<ConfirmResetTokenCommand, ConfirmResetTokenCommandResponse>
 {
-	readonly UserManager<AppUser> _userManager;
+	readonly IAuthService _authService;
 
-	public ConfirmResetTokenCommandHandler(UserManager<AppUser> userManager)
+	public ConfirmResetTokenCommandHandler(IAuthService authService)
 	{
-		_userManager = userManager;
+		_authService = authService;
 	}
 
 	public async Task<ConfirmResetTokenCommandResponse> Handle(ConfirmResetTokenCommand request, CancellationToken cancellationToken)
 	{
-		AppUser? user = await _userManager.FindByIdAsync(request.UserId);
-
-		if (user is not null && !(string.IsNullOrEmpty(request.ResetToken)))
-		{
-			request.ResetToken = request.ResetToken.UrlDecode();
-
-			return new()
-			{
-				IsSucceeded = await _userManager.VerifyUserTokenAsync(user,
-															_userManager.Options.Tokens.PasswordResetTokenProvider,
-															"ResetPassword",
-															request.ResetToken)
-			};
-		}
-
 		return new()
 		{
-			IsSucceeded = false
+			IsSucceeded = await _authService.ConfirmResetTokenAsync(request.UserId!, request.ResetToken!)
 		};
 	}
 }

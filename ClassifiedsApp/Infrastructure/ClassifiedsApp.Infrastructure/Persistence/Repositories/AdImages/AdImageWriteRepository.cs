@@ -1,5 +1,5 @@
-﻿using ClassifiedsApp.Core.Entities;
-using ClassifiedsApp.Core.Interfaces.Repositories.AdImages;
+﻿using ClassifiedsApp.Application.Interfaces.Repositories.AdImages;
+using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Infrastructure.Persistence.Context;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.Common;
 

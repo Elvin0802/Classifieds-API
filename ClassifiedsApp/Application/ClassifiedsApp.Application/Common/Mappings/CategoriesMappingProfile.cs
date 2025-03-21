@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ClassifiedsApp.Core.Dtos.Categories;
+using ClassifiedsApp.Application.Dtos.Categories;
 using ClassifiedsApp.Core.Entities;
 
 namespace ClassifiedsApp.Application.Common.Mappings;

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using ClassifiedsApp.Core.Dtos.Locations;
+using ClassifiedsApp.Application.Dtos.Locations;
+using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
+using ClassifiedsApp.Application.Interfaces.Services.Cache;
 using ClassifiedsApp.Core.Entities;
-using ClassifiedsApp.Core.Interfaces.Repositories.Locations;
-using ClassifiedsApp.Core.Interfaces.Services.Cache;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

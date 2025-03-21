@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using ClassifiedsApp.Core.Dtos.Locations;
-using ClassifiedsApp.Core.Interfaces.Repositories.Locations;
+using ClassifiedsApp.Application.Dtos.Locations;
+using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Queries.Locations.GetLocationById;

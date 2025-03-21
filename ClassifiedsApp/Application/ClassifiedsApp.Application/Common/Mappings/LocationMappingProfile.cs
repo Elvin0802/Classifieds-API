@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using ClassifiedsApp.Application.Dtos.Locations;
 using ClassifiedsApp.Application.Features.Commands.Locations.CreateLocation;
-using ClassifiedsApp.Core.Dtos.Locations;
 using ClassifiedsApp.Core.Entities;
 
 namespace ClassifiedsApp.Application.Common.Mappings;

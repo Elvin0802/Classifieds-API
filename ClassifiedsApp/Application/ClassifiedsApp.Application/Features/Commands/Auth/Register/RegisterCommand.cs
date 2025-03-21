@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Dtos.Auth.Users;
+﻿using ClassifiedsApp.Application.Dtos.Auth.Users;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Auth.Register;

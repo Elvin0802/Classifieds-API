@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Dtos.Ads;
+﻿using ClassifiedsApp.Application.Dtos.Ads;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Ads.CreateAd;

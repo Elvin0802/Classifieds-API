@@ -1,17 +1,16 @@
-﻿using ClassifiedsApp.Core.Entities;
+﻿using ClassifiedsApp.Application.Interfaces.Services.Users;
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace ClassifiedsApp.Application.Features.Commands.Users.ChangePassword;
 
 public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, ChangePasswordCommandResponse>
 {
-	readonly UserManager<AppUser> _userManager;
+	readonly IUserService _userService;
 
-	public ChangePasswordCommandHandler(UserManager<AppUser> userManager)
+	public ChangePasswordCommandHandler(IUserService userService)
 	{
-		_userManager = userManager;
+		_userService = userService;
 	}
 
 	public async Task<ChangePasswordCommandResponse> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
@@ -21,17 +20,12 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 			if (!request.NewPassword.Equals(request.NewPasswordConfirm))
 				throw new ValidationException("Please verify the password exactly.");
 
-			AppUser? user = await _userManager.FindByIdAsync(request.UserId) ??
-							throw new ArgumentNullException(nameof(request), $"User with this id: {request.UserId} , Not Found.");
-
-			var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
-
-			if (result.Succeeded)
-				await _userManager.UpdateSecurityStampAsync(user);
+			if (!await _userService.ChangePasswordAsync(request.UserId, request.OldPassword, request.NewPassword))
+				throw new Exception("Change Password failed.");
 
 			return new()
 			{
-				IsSucceeded = result.Succeeded,
+				IsSucceeded = true,
 				Message = "Password changed."
 			};
 		}

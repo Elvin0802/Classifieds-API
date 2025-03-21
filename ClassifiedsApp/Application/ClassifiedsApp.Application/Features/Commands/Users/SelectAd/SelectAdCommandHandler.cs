@@ -1,5 +1,5 @@
-﻿using ClassifiedsApp.Core.Entities;
-using ClassifiedsApp.Core.Interfaces.Repositories.Users;
+﻿using ClassifiedsApp.Application.Interfaces.Repositories.Users;
+using ClassifiedsApp.Core.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

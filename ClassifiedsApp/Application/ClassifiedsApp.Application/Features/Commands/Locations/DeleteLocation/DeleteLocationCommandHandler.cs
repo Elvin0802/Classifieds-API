@@ -1,5 +1,5 @@
-﻿using ClassifiedsApp.Core.Interfaces.Repositories.Locations;
-using ClassifiedsApp.Core.Interfaces.Services.Cache;
+﻿using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
+using ClassifiedsApp.Application.Interfaces.Services.Cache;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Locations.DeleteLocation;

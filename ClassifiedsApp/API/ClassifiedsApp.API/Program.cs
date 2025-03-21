@@ -1,4 +1,4 @@
-using ClassifiedsApp.API.Config;
+﻿using ClassifiedsApp.API.Config;
 using ClassifiedsApp.API.Middlewares;
 using ClassifiedsApp.Application;
 using ClassifiedsApp.Core.Entities;
@@ -77,6 +77,24 @@ app.Run();
 //-----------------------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------------------------------------------
 
+/*
+
+public class NotFoundUserException : Exception
+	{
+		public NotFoundUserException() : base("Kullanıcı adı veya şifre hatalı.")
+		{
+		}
+
+		public NotFoundUserException(string? message) : base(message)
+		{
+		}
+
+		public NotFoundUserException(string? message, Exception? innerException) : base(message, innerException)
+		{
+		}
+	}
+
+*/
 
 /*
 
@@ -565,17 +583,17 @@ public class Program
 
 {
   "RedisCache": {
-    "ConnectionString": "localhost:6379",
-    "InstanceName": "YourAppName",
-    "AbsoluteExpirationInHours": 1,
-    "SlidingExpirationInMinutes": 30
+	"ConnectionString": "localhost:6379",
+	"InstanceName": "YourAppName",
+	"AbsoluteExpirationInHours": 1,
+	"SlidingExpirationInMinutes": 30
   },
   "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft": "Warning",
-      "Microsoft.Hosting.Lifetime": "Information"
-    }
+	"LogLevel": {
+	  "Default": "Information",
+	  "Microsoft": "Warning",
+	  "Microsoft.Hosting.Lifetime": "Information"
+	}
   },
   "AllowedHosts": "*"
 }

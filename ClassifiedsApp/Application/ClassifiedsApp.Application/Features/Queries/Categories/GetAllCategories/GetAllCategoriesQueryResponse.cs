@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Dtos.Categories;
+﻿using ClassifiedsApp.Application.Dtos.Categories;
 
 namespace ClassifiedsApp.Application.Features.Queries.Categories.GetAllCategories;
 

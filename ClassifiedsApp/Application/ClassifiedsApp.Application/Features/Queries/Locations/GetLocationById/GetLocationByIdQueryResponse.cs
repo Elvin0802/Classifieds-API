@@ -1,4 +1,4 @@
-﻿using ClassifiedsApp.Core.Dtos.Locations;
+﻿using ClassifiedsApp.Application.Dtos.Locations;
 
 namespace ClassifiedsApp.Application.Features.Queries.Locations.GetLocationById;
 
