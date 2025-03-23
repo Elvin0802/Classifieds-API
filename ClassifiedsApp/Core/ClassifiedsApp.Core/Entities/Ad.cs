@@ -31,13 +31,24 @@ public class Ad : BaseEntity
 	public IList<AdSubCategoryValue> SubCategoryValues { get; set; }
 	public IList<UserAdSelection> SelectorUsers { get; set; }
 
+	/* Feature system */
+	public bool IsFeatured { get; set; }
+	public DateTimeOffset? FeatureStartDate { get; set; }
+	public DateTimeOffset? FeatureEndDate { get; set; }
+	public int? FeaturePriority { get; set; } // Higher priority ads appear first
+
+	public IList<FeaturedAdTransaction> FeatureTransactions { get; set; }
 
 	public Ad()
 	{
 		Title = "";
 		Description = "";
 		Price = 0;
+		IsNew = false;
+		ExpiresAt = DateTimeOffset.MinValue;
 		Status = AdStatus.Rejected;
 		ViewCount = 0;
+		IsFeatured = false;
+		FeaturePriority = 0;
 	}
 }

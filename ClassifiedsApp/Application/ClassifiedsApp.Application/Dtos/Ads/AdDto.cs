@@ -12,7 +12,11 @@ public class AdDto : BaseEntityDto
 	public string Description { get; set; }
 	public decimal Price { get; set; }
 	public bool IsNew { get; set; }
+	public bool IsFeatured { get; set; } = false;
+	public bool IsOwner { get; set; } = false;
+	public DateTimeOffset? FeatureEndDate { get; set; }
 	public long ViewCount { get; set; }
+	public long SelectorUsersCount { get; set; }
 	public CategoryDto Category { get; set; }
 	public MainCategoryDto MainCategory { get; set; }
 	public LocationDto Location { get; set; }
@@ -20,5 +24,4 @@ public class AdDto : BaseEntityDto
 	public IList<AdImageDto> Images { get; set; }
 	public IList<AdSubCategoryValueDto> AdSubCategoryValues { get; set; }
 
-	public bool IsOwner = false;
 }

@@ -1,5 +1,7 @@
 ﻿using ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
+using ClassifiedsApp.Application.Features.Queries.Users.GetAllSelectedAds;
 using ClassifiedsApp.Application.Features.Queries.Users.GetUserData;
+using ClassifiedsApp.Core.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -33,7 +35,7 @@ public class ProfileController : ControllerBase
 	{
 		return Ok(await _mediator.Send(new GetAllAdsQuery()
 		{
-			AdStatus = Core.Enums.AdStatus.Active,
+			AdStatus = AdStatus.Active,
 			SearchedAppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!)
 		}));
 	}
@@ -43,7 +45,7 @@ public class ProfileController : ControllerBase
 	{
 		return Ok(await _mediator.Send(new GetAllAdsQuery()
 		{
-			AdStatus = Core.Enums.AdStatus.Pending,
+			AdStatus = AdStatus.Pending,
 			SearchedAppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!)
 		}));
 	}
@@ -53,7 +55,7 @@ public class ProfileController : ControllerBase
 	{
 		return Ok(await _mediator.Send(new GetAllAdsQuery()
 		{
-			AdStatus = Core.Enums.AdStatus.Expired,
+			AdStatus = AdStatus.Expired,
 			SearchedAppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!)
 		}));
 	}
@@ -63,8 +65,17 @@ public class ProfileController : ControllerBase
 	{
 		return Ok(await _mediator.Send(new GetAllAdsQuery()
 		{
-			AdStatus = Core.Enums.AdStatus.Rejected,
+			AdStatus = AdStatus.Rejected,
 			SearchedAppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!),
+		}));
+	}
+
+	[HttpPost("[action]")]
+	public async Task<ActionResult<GetAllSelectedAdsQueryResponse>> GetSelectedAds()
+	{
+		return Ok(await _mediator.Send(new GetAllSelectedAdsQuery()
+		{
+			CurrentAppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!)
 		}));
 	}
 

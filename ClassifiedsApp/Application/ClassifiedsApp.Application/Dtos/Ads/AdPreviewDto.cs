@@ -8,6 +8,7 @@ public class AdPreviewDto
 	public decimal Price { get; set; }
 	public bool IsNew { get; set; }
 	public bool IsSelected { get; set; }
+	public bool IsFeatured { get; set; }
 	public string LocationCityName { get; set; }
 	public string MainImageUrl { get; set; }
 	public DateTimeOffset UpdatedAt { get; set; }

@@ -15,4 +15,5 @@ public class AppUser : IdentityUser<Guid>
 
 	public IList<Ad> Ads { get; set; }
 	public IList<UserAdSelection> SelectedAds { get; set; }
+	public IList<FeaturedAdTransaction> FeatureTransactions { get; set; }
 }

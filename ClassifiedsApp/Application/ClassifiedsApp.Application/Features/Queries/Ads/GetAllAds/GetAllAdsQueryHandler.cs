@@ -46,10 +46,17 @@ public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQu
 
 			request.PageSize = query.Count();
 
-
 			//// for optimisation , use this.
 			//if (request.AdStatus.HasValue && request.AdStatus.Value != AdStatus.Active)
 			//	query = query.Where(ad => ad.Status == request.AdStatus.Value);
+		}
+
+		// vip elanlari gotururuk.
+		if (request.IsFeatured.HasValue && request.IsFeatured.Value)
+		{
+			query = query.Where(ad => ad.IsFeatured && ad.FeatureEndDate > DateTimeOffset.UtcNow)
+						 .OrderByDescending(ad => ad.FeaturePriority)
+						 .ThenByDescending(ad => ad.FeatureStartDate);
 		}
 
 		// Apply search filter
@@ -100,6 +107,7 @@ public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQu
 				Price = p.Price,
 				LocationCityName = p.Location.City,
 				IsNew = p.IsNew,
+				IsFeatured = p.IsFeatured,
 				MainImageUrl = p.Images.FirstOrDefault(img => img.SortOrder == 0)!.Url,
 				IsSelected = request.CurrentAppUserId.HasValue && p.SelectorUsers.Any(su => su.AppUserId == request.CurrentAppUserId.Value),
 				UpdatedAt = p.UpdatedAt,

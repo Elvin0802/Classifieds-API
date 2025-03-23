@@ -25,6 +25,7 @@ public class GetAllAdsQuery : IRequest<GetAllAdsQueryResponse>
 	public bool IsDescending { get; set; } = true;
 
 	public string? SearchTitle { get; set; }
+	public bool? IsFeatured { get; set; }
 
 	public decimal? MinPrice { get; set; }
 	public decimal? MaxPrice { get; set; }

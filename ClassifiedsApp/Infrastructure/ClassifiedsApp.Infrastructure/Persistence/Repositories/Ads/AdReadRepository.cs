@@ -56,6 +56,8 @@ public class AdReadRepository : ReadRepository<Ad>, IAdReadRepository
 					 .Include(ad => ad.MainCategory)
 					 .Include(ad => ad.AppUser)
 					 .Include(ad => ad.Images)
+					 .Include(ad => ad.FeatureTransactions)
+					 .Include(ad => ad.SelectorUsers)
 					 .AsSplitQuery();
 
 		var ad = await query.FirstOrDefaultAsync(data => data.Id == id);

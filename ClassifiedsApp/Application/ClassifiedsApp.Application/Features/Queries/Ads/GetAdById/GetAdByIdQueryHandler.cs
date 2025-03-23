@@ -36,7 +36,7 @@ public class GetAdByIdQueryHandler : IRequestHandler<GetAdByIdQuery, GetAdByIdRe
 
 		return new()
 		{
-			//AdDto = _mapper.Map<AdDto>(item)
+			//AdDto = _mapper.Map<AdDto>(item) // mapper i config et.
 
 			AdDto = new()
 			{
@@ -53,9 +53,14 @@ public class GetAdByIdQueryHandler : IRequestHandler<GetAdByIdQuery, GetAdByIdRe
 				AppUser = _mapper.Map<AppUserDto>(item.AppUser),
 
 				IsOwner = item.AppUserId == request.CurrentUserId,
+				IsNew = item.IsNew,
+				IsFeatured = item.IsFeatured,
+				FeatureEndDate = item.FeatureEndDate,
+				SelectorUsersCount = item.SelectorUsers.Count,
 
 				Images = item.Images.Select(img => _mapper.Map<AdImageDto>(img)).ToList(),
-				AdSubCategoryValues = item.SubCategoryValues.Select(ascv => _mapper.Map<AdSubCategoryValueDto>(ascv)).ToList(),
+				AdSubCategoryValues = item.SubCategoryValues.Select(ascv => _mapper.Map<AdSubCategoryValueDto>(ascv)).ToList()
+
 			}
 		};
 	}

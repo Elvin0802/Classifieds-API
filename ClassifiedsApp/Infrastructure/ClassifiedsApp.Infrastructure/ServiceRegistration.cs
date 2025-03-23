@@ -3,18 +3,26 @@ using ClassifiedsApp.Application.Interfaces.Repositories.AdImages;
 using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
 using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
 using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
+using ClassifiedsApp.Application.Interfaces.Repositories.Reports;
 using ClassifiedsApp.Application.Interfaces.Repositories.Users;
+using ClassifiedsApp.Application.Interfaces.Services.Ads;
+using ClassifiedsApp.Application.Interfaces.Services.Auth;
 using ClassifiedsApp.Application.Interfaces.Services.Cache;
 using ClassifiedsApp.Application.Interfaces.Services.Mail;
+using ClassifiedsApp.Application.Interfaces.Services.Users;
 using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Infrastructure.Persistence.Context;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.AdImages;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.Ads;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.Categories;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.Locations;
+using ClassifiedsApp.Infrastructure.Persistence.Repositories.Reports;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.Users;
+using ClassifiedsApp.Infrastructure.Services.Ads;
+using ClassifiedsApp.Infrastructure.Services.Auth;
 using ClassifiedsApp.Infrastructure.Services.Cache;
 using ClassifiedsApp.Infrastructure.Services.Mail;
+using ClassifiedsApp.Infrastructure.Services.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -54,8 +62,8 @@ public static class ServiceRegistration
 
 		if (configuration.GetValue<bool>("RedisEnabled"))
 		{
-			services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer
-																.Connect(configuration["RedisCache:Configuration"]!));
+			services.AddSingleton<IConnectionMultiplexer>(sp =>
+					ConnectionMultiplexer.Connect(configuration["RedisCache:Configuration"]!));
 
 			services.AddStackExchangeRedisCache(options =>
 			{
@@ -105,6 +113,17 @@ public static class ServiceRegistration
 		services.AddScoped<IUserAdSelectionWriteRepository, UserAdSelectionWriteRepository>();
 		services.AddScoped<IUserAdSelectionReadRepository, UserAdSelectionReadRepository>();
 
+		services.AddScoped<IFeaturedAdTransactionReadRepository, FeaturedAdTransactionReadRepository>();
+		services.AddScoped<IFeaturedAdTransactionWriteRepository, FeaturedAdTransactionWriteRepository>();
+
 		services.AddScoped<IMailService, MailService>();
+
+		services.AddScoped<IFeaturedAdService, FeaturedAdService>();
+
+		services.AddScoped<IReportReadRepository, ReportReadRepository>();
+		services.AddScoped<IReportWriteRepository, ReportWriteRepository>();
+
+		services.AddScoped<IAuthService, AuthService>();
+		services.AddScoped<IUserService, UserService>();
 	}
 }

@@ -47,6 +47,18 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset?>("FeatureEndDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("FeaturePriority")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("FeatureStartDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsNew")
                         .HasColumnType("bit");
 
@@ -57,7 +69,8 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -264,6 +277,50 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.FeaturedAdTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AdId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("decimal(18,6)");
+
+                    b.Property<Guid>("AppUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ArchivedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("DurationDays")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PaymentReference")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdId");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("FeaturedAdTransactions");
+                });
+
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.Location", b =>
                 {
                     b.Property<Guid>("Id")
@@ -323,6 +380,58 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.HasIndex("ParentCategoryId");
 
                     b.ToTable("MainCategories");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.Report", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AdId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ArchivedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Reason")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ReportedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReviewNotes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ReviewedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("ReviewedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdId");
+
+                    b.HasIndex("ReportedByUserId");
+
+                    b.HasIndex("ReviewedByUserId");
+
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.SubCategory", b =>
@@ -640,6 +749,25 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                     b.Navigation("SubCategory");
                 });
 
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.FeaturedAdTransaction", b =>
+                {
+                    b.HasOne("ClassifiedsApp.Core.Entities.Ad", "Ad")
+                        .WithMany("FeatureTransactions")
+                        .HasForeignKey("AdId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClassifiedsApp.Core.Entities.AppUser", "AppUser")
+                        .WithMany("FeatureTransactions")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ad");
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.MainCategory", b =>
                 {
                     b.HasOne("ClassifiedsApp.Core.Entities.Category", "ParentCategory")
@@ -649,6 +777,32 @@ namespace ClassifiedsApp.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("ClassifiedsApp.Core.Entities.Report", b =>
+                {
+                    b.HasOne("ClassifiedsApp.Core.Entities.Ad", "Ad")
+                        .WithMany()
+                        .HasForeignKey("AdId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ClassifiedsApp.Core.Entities.AppUser", "ReportedByUser")
+                        .WithMany()
+                        .HasForeignKey("ReportedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ClassifiedsApp.Core.Entities.AppUser", "ReviewedByUser")
+                        .WithMany()
+                        .HasForeignKey("ReviewedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Ad");
+
+                    b.Navigation("ReportedByUser");
+
+                    b.Navigation("ReviewedByUser");
                 });
 
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.SubCategory", b =>
@@ -745,6 +899,8 @@ namespace ClassifiedsApp.Infrastructure.Migrations
 
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.Ad", b =>
                 {
+                    b.Navigation("FeatureTransactions");
+
                     b.Navigation("Images");
 
                     b.Navigation("SelectorUsers");
@@ -755,6 +911,8 @@ namespace ClassifiedsApp.Infrastructure.Migrations
             modelBuilder.Entity("ClassifiedsApp.Core.Entities.AppUser", b =>
                 {
                     b.Navigation("Ads");
+
+                    b.Navigation("FeatureTransactions");
 
                     b.Navigation("SelectedAds");
                 });
