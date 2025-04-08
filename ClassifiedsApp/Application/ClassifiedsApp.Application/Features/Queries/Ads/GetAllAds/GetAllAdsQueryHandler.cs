@@ -3,7 +3,6 @@ using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
 using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Core.Enums;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
@@ -11,12 +10,10 @@ namespace ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
 public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQueryResponse>
 {
 	private readonly IAdReadRepository _repository;
-	readonly UserManager<AppUser> _userManager;
 
-	public GetAllAdsQueryHandler(IAdReadRepository repository, UserManager<AppUser> userManager)
+	public GetAllAdsQueryHandler(IAdReadRepository repository)
 	{
 		_repository = repository;
-		_userManager = userManager;
 	}
 
 	public async Task<GetAllAdsQueryResponse> Handle(GetAllAdsQuery request, CancellationToken cancellationToken)
@@ -36,28 +33,25 @@ public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQu
 
 		if (!(request.AdStatus.HasValue))
 			query = query.Where(ad => ad.Status == AdStatus.Active);
+		else
+			query = query.Where(ad => ad.Status == request.AdStatus.Value);
 
 		if (request.SearchedAppUserId.HasValue)
 		{
 			query = query.Where(ad => ad.AppUserId == request.SearchedAppUserId.Value);
 
-			if (request.AdStatus.HasValue)
-				query = query.Where(ad => ad.Status == request.AdStatus.Value);
-
 			request.PageSize = query.Count();
-
-			//// for optimisation , use this.
-			//if (request.AdStatus.HasValue && request.AdStatus.Value != AdStatus.Active)
-			//	query = query.Where(ad => ad.Status == request.AdStatus.Value);
 		}
 
-		// vip elanlari gotururuk.
-		if (request.IsFeatured.HasValue && request.IsFeatured.Value)
+		// get vip ads.
+		if (request.IsFeatured)
 		{
 			query = query.Where(ad => ad.IsFeatured && ad.FeatureEndDate > DateTimeOffset.UtcNow)
 						 .OrderByDescending(ad => ad.FeaturePriority)
 						 .ThenByDescending(ad => ad.FeatureStartDate);
 		}
+		else
+			query = query.Where(ad => ad.IsFeatured == false);
 
 		// Apply search filter
 		var searchTerm = request.SearchTitle?.Trim().ToLower();

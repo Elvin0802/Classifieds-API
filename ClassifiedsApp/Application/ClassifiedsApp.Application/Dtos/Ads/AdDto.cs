@@ -14,6 +14,7 @@ public class AdDto : BaseEntityDto
 	public bool IsNew { get; set; }
 	public bool IsFeatured { get; set; } = false;
 	public bool IsOwner { get; set; } = false;
+	public DateTimeOffset ExpiresAt { get; set; }
 	public DateTimeOffset? FeatureEndDate { get; set; }
 	public long ViewCount { get; set; }
 	public long SelectorUsersCount { get; set; }
