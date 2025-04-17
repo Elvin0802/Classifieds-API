@@ -1,11 +1,7 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Features.Queries.Common;
 
 namespace ClassifiedsApp.Application.Features.Queries.Categories.GetAllSubCategories;
 
-public class GetAllSubCategoriesQuery : IRequest<GetAllSubCategoriesQueryResponse>
+public class GetAllSubCategoriesQuery : GetAllDataQuery<GetAllSubCategoriesQueryResponse>
 {
-	public int PageNumber { get; set; } = 1;
-	public int PageSize { get; set; } = 10;
-	public string? SortBy { get; set; }
-	public bool IsDescending { get; set; }
 }

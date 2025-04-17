@@ -1,8 +1,7 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Features.Queries.Common;
 
 namespace ClassifiedsApp.Application.Features.Queries.Users.GetUserData;
 
-public class GetUserDataQuery : IRequest<GetUserDataQueryResponse>
+public class GetUserDataQuery : GetDataByIdQuery<GetUserDataQueryResponse>
 {
-	public Guid? AppUserId { get; set; }
 }

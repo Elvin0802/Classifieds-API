@@ -1,12 +1,8 @@
 ﻿using ClassifiedsApp.Application.Dtos.Locations;
+using ClassifiedsApp.Application.Features.Queries.Common;
 
 namespace ClassifiedsApp.Application.Features.Queries.Locations.GetAllLocations;
 
-public class GetAllLocationsQueryResponse
+public class GetAllLocationsQueryResponse : GetAllDataQueryResponse<LocationDto>
 {
-	public IList<LocationDto>? Items { get; set; }
-	public int PageNumber { get; set; }
-	public int PageSize { get; set; }
-	public int TotalCount { get; set; }
-	public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
 }

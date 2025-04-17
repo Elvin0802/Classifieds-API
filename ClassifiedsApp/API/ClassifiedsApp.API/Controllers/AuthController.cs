@@ -1,8 +1,9 @@
-﻿using ClassifiedsApp.Application.Features.Commands.Auth.ConfirmResetToken;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Dtos.Auth.Token;
+using ClassifiedsApp.Application.Features.Commands.Auth.ConfirmResetToken;
 using ClassifiedsApp.Application.Features.Commands.Auth.Login;
 using ClassifiedsApp.Application.Features.Commands.Auth.PasswordReset;
 using ClassifiedsApp.Application.Features.Commands.Auth.RefreshTokenLogin;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -24,60 +25,42 @@ public class AuthController : ControllerBase
 	[HttpPost("[action]")]
 	public async Task<IActionResult> Login(LoginCommand command)
 	{
-		try
-		{
-			LoginCommandResponse response = await _mediator.Send(command);
+		AuthTokenDto authToken = (await _mediator.Send(command)).Data;
 
-			Response.Headers.Append("Authorization", $"Bearer {response.AuthToken.AccessToken}");
+		Response.Headers.Append("Authorization", $"Bearer {authToken.AccessToken}");
 
-			Response.Cookies.Append("refreshToken", response.AuthToken.RefreshToken!, new CookieOptions
-			{
-				HttpOnly = true,
-				Secure = false,
-				SameSite = SameSiteMode.Lax,
-				Expires = response.AuthToken.RefreshTokenExpiresAt,
-			});
+		Response.Cookies.Append("refreshToken", authToken.RefreshToken!, new CookieOptions
+		{
+			HttpOnly = true,
+			Secure = false,
+			SameSite = SameSiteMode.Lax,
+			Expires = authToken.RefreshTokenExpiresAt,
+		});
 
-			return Ok(new { token = response.AuthToken.AccessToken });
-		}
-		catch (ValidationException ex)
-		{
-			var errors = ex.Errors.Select(e => new { Property = e.PropertyName, Error = e.ErrorMessage });
-			return BadRequest(new { Errors = errors });
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new { Error = ex.Message });
-		}
+		return Ok(new { token = authToken.AccessToken });
+		//return Ok(); // use this line for production.
 	}
 
 	[HttpPost("[action]")]
 	public async Task<IActionResult> RefreshTokenLogin()
 	{
-		try
+		var refreshToken = Request.Cookies["refreshToken"];
+		if (string.IsNullOrEmpty(refreshToken))
+			return Unauthorized(new { Error = "Refresh token not found." });
+
+		AuthTokenDto authToken = (await _mediator.Send(new RefreshTokenLoginCommand { RefreshToken = refreshToken })).Data;
+
+		Response.Headers.Append("Authorization", $"Bearer {authToken.AccessToken}");
+
+		Response.Cookies.Append("refreshToken", authToken.RefreshToken!, new CookieOptions
 		{
-			var refreshToken = Request.Cookies["refreshToken"];
-			if (string.IsNullOrEmpty(refreshToken))
-				return Unauthorized(new { Error = "Refresh token not found." });
+			HttpOnly = true,
+			Secure = false,
+			SameSite = SameSiteMode.Lax,
+			Expires = authToken.RefreshTokenExpiresAt,
+		});
 
-			RefreshTokenLoginCommandResponse response = await _mediator.Send(new RefreshTokenLoginCommand { RefreshToken = refreshToken });
-
-			Response.Headers.Append("Authorization", $"Bearer {response.AuthToken.AccessToken}");
-
-			Response.Cookies.Append("refreshToken", response.AuthToken.RefreshToken!, new CookieOptions
-			{
-				HttpOnly = true,
-				Secure = false,
-				SameSite = SameSiteMode.Lax,
-				Expires = response.AuthToken.RefreshTokenExpiresAt,
-			});
-
-			return Ok(new { token = response.AuthToken.AccessToken });
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new { Error = ex.Message });
-		}
+		return Ok(new { token = authToken.AccessToken });
 	}
 
 	[HttpPost("[action]")]
@@ -97,15 +80,16 @@ public class AuthController : ControllerBase
 	}
 
 	[HttpPost("reset-password")]
-	public async Task<ActionResult<PasswordResetCommandResponse>> PasswordReset([FromBody] PasswordResetCommand command)
+	public async Task<ActionResult<Result>> PasswordReset([FromBody] PasswordResetCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("confirm-reset-token")]
-	public async Task<ActionResult<ConfirmResetTokenCommandResponse>> ConfirmResetToken([FromBody] ConfirmResetTokenCommand command)
+	public async Task<ActionResult<Result>> ConfirmResetToken([FromBody] ConfirmResetTokenCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}
+
 }
 

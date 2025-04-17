@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using ClassifiedsApp.Application.Common.Results;
 using ClassifiedsApp.Application.Dtos.Locations;
 using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Queries.Locations.GetLocationById;
 
-public class GetLocationByIdQueryHandler : IRequestHandler<GetLocationByIdQuery, GetLocationByIdQueryResponse>
+public class GetLocationByIdQueryHandler : IRequestHandler<GetLocationByIdQuery, Result<GetLocationByIdQueryResponse>>
 {
 	readonly ILocationReadRepository _readRepository;
 	readonly IMapper _mapper;
@@ -16,18 +17,19 @@ public class GetLocationByIdQueryHandler : IRequestHandler<GetLocationByIdQuery,
 		_mapper = mapper;
 	}
 
-	public async Task<GetLocationByIdQueryResponse> Handle(GetLocationByIdQuery request, CancellationToken cancellationToken)
+	public async Task<Result<GetLocationByIdQueryResponse>> Handle(GetLocationByIdQuery request, CancellationToken cancellationToken)
 	{
-		var item = await _readRepository.GetByIdAsync(request.Id, false);
-
-		if (item is null)
-			return null!;
-
-		await Task.Delay(400);
-
-		return new()
+		try
 		{
-			Location = _mapper.Map<LocationDto>(item)
-		};
+			var item = _mapper.Map<LocationDto>(await _readRepository.GetByIdAsync(request.Id, false));
+
+			return item is null
+					? throw new KeyNotFoundException("Location not found.")
+					: Result.Success(new GetLocationByIdQueryResponse() { Item = item }, "Location retrieved successfully.");
+		}
+		catch (Exception ex)
+		{
+			return Result.Failure<GetLocationByIdQueryResponse>($"Failed to retrieve location: {ex.Message}");
+		}
 	}
 }

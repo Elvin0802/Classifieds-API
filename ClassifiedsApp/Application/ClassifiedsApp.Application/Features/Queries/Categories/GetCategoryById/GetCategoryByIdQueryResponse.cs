@@ -1,8 +1,8 @@
 ﻿using ClassifiedsApp.Application.Dtos.Categories;
+using ClassifiedsApp.Application.Features.Queries.Common;
 
 namespace ClassifiedsApp.Application.Features.Queries.Categories.GetCategoryById;
 
-public class GetCategoryByIdQueryResponse
+public class GetCategoryByIdQueryResponse : GetDataByIdQueryResponse<CategoryDto>
 {
-	public CategoryDto? CategoryDto { get; set; }
 }

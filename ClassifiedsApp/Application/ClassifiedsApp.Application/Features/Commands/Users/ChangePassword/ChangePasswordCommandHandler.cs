@@ -1,10 +1,11 @@
-﻿using ClassifiedsApp.Application.Interfaces.Services.Users;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Services.Users;
 using FluentValidation;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Users.ChangePassword;
 
-public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, ChangePasswordCommandResponse>
+public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, Result>
 {
 	readonly IUserService _userService;
 
@@ -13,7 +14,7 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 		_userService = userService;
 	}
 
-	public async Task<ChangePasswordCommandResponse> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -23,19 +24,11 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 			if (!await _userService.ChangePasswordAsync(request.UserId, request.OldPassword, request.NewPassword))
 				throw new Exception("Change Password failed.");
 
-			return new()
-			{
-				IsSucceeded = true,
-				Message = "Password changed."
-			};
+			return Result.Success("Password changed successfully.");
 		}
 		catch (Exception ex)
 		{
-			return new()
-			{
-				IsSucceeded = false,
-				Message = ex.Message
-			};
+			return Result.Failure($"Error occoured. {ex.Message}");
 		}
 	}
 }

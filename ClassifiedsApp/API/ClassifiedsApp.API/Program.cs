@@ -1,8 +1,13 @@
 ﻿using ClassifiedsApp.API.Config;
 using ClassifiedsApp.API.Middlewares;
 using ClassifiedsApp.Application;
+//using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
+//using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
+//using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
 using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Infrastructure;
+using ClassifiedsApp.SignalR;
+using ClassifiedsApp.SignalR.Hubs;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
 
@@ -22,8 +27,11 @@ builder.Services.AuthenticationAndAuthorization(builder.Configuration);
 
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddSignalRServices();
 
 builder.Services.AddSwagger();
+
+builder.Services.AddBackgroundJobs();
 
 var client = builder.Configuration["ClientUrl"];
 
@@ -56,41 +64,29 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Seed roles and admin user on application startup
+app.MapHub<ChatHub>("/chatHub");
+
+// Adding seed data.
 using (var scope = app.Services.CreateScope())
 {
-	var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>();
-	var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
-
-	await SeedData.SeedRolesAndUsersAsync(roleManager, userManager, builder.Configuration);
+	await SeedData.AddSeedRolesAndUsersAsync(scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>(),
+											 scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>(),
+											 builder.Configuration);
+	/*
+		await SeedData.AddSeedDataAsync(scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>(),
+										builder.Configuration,
+										scope.ServiceProvider.GetRequiredService<ICategoryReadRepository>(),
+										scope.ServiceProvider.GetRequiredService<ICategoryWriteRepository>(),
+										scope.ServiceProvider.GetRequiredService<IMainCategoryReadRepository>(),
+										scope.ServiceProvider.GetRequiredService<IMainCategoryWriteRepository>(),
+										scope.ServiceProvider.GetRequiredService<ISubCategoryReadRepository>(),
+										scope.ServiceProvider.GetRequiredService<ISubCategoryWriteRepository>(),
+										scope.ServiceProvider.GetRequiredService<ISubCategoryOptionReadRepository>(),
+										scope.ServiceProvider.GetRequiredService<ISubCategoryOptionWriteRepository>(),
+										scope.ServiceProvider.GetRequiredService<IAdReadRepository>(),
+										scope.ServiceProvider.GetRequiredService<IAdWriteRepository>(),
+										scope.ServiceProvider.GetRequiredService<ILocationReadRepository>(),
+										scope.ServiceProvider.GetRequiredService<ILocationWriteRepository>());*/
 }
 
 app.Run();
-
-
-//-----------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------------
-
-/*
-
-public class NotFoundUserException : Exception
-	{
-		public NotFoundUserException() : base("Kullanıcı adı veya şifre hatalı.")
-		{
-		}
-
-		public NotFoundUserException(string? message) : base(message)
-		{
-		}
-
-		public NotFoundUserException(string? message, Exception? innerException) : base(message, innerException)
-		{
-		}
-	}
-
-*/

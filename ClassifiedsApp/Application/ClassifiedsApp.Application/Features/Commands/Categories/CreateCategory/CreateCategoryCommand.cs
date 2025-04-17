@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Common.Results;
+using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Categories.CreateCategory;
 
-public class CreateCategoryCommand : IRequest<CreateCategoryCommandResponse>
+public class CreateCategoryCommand : IRequest<Result>
 {
 	public string Name { get; set; }
 }

@@ -1,10 +1,11 @@
-﻿using ClassifiedsApp.Application.Interfaces.Services.Users;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Services.Users;
 using FluentValidation;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Users.UpdatePassword;
 
-public class UpdatePasswordCommandHandler : IRequestHandler<UpdatePasswordCommand, UpdatePasswordCommandResponse>
+public class UpdatePasswordCommandHandler : IRequestHandler<UpdatePasswordCommand, Result>
 {
 	readonly IUserService _userService;
 
@@ -13,7 +14,7 @@ public class UpdatePasswordCommandHandler : IRequestHandler<UpdatePasswordComman
 		_userService = userService;
 	}
 
-	public async Task<UpdatePasswordCommandResponse> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -23,19 +24,11 @@ public class UpdatePasswordCommandHandler : IRequestHandler<UpdatePasswordComman
 			if (!await _userService.UpdatePasswordAsync(request.UserId, request.ResetToken, request.Password))
 				throw new Exception("Password Not Updated.");
 
-			return new()
-			{
-				IsSucceeded = true,
-				Message = "Password updated."
-			};
+			return Result.Success("Password updated.");
 		}
 		catch (Exception ex)
 		{
-			return new()
-			{
-				IsSucceeded = false,
-				Message = ex.Message
-			};
+			return Result.Failure($"Error occoured. {ex.Message}");
 		}
 	}
 }

@@ -1,9 +1,10 @@
-﻿using ClassifiedsApp.Application.Interfaces.Services.Auth;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Services.Auth;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Auth.PasswordReset;
 
-public class PasswordResetCommandHandler : IRequestHandler<PasswordResetCommand, PasswordResetCommandResponse>
+public class PasswordResetCommandHandler : IRequestHandler<PasswordResetCommand, Result>
 {
 	readonly IAuthService _authService;
 
@@ -12,8 +13,18 @@ public class PasswordResetCommandHandler : IRequestHandler<PasswordResetCommand,
 		_authService = authService;
 	}
 
-	public async Task<PasswordResetCommandResponse> Handle(PasswordResetCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(PasswordResetCommand request, CancellationToken cancellationToken)
 	{
-		return new() { IsSucceeded = (await _authService.PasswordResetAsnyc(request.Email)) };
+		try
+		{
+			if (await _authService.PasswordResetAsnyc(request.Email))
+				return Result.Success("Password reset successfully completed.");
+
+			throw new Exception("Password reset failed.");
+		}
+		catch (Exception ex)
+		{
+			return Result.Failure($"Error occoured. {ex.Message}");
+		}
 	}
 }

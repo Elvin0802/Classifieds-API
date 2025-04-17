@@ -1,10 +1,11 @@
-﻿using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
 using ClassifiedsApp.Core.Entities;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Categories.CreateSubCategory;
 
-public class CreateSubCategoryCommandHandler : IRequestHandler<CreateSubCategoryCommand, CreateSubCategoryCommandResponse>
+public class CreateSubCategoryCommandHandler : IRequestHandler<CreateSubCategoryCommand, Result>
 {
 	readonly ISubCategoryWriteRepository _writeRepository;
 
@@ -13,8 +14,7 @@ public class CreateSubCategoryCommandHandler : IRequestHandler<CreateSubCategory
 		_writeRepository = writeRepository;
 	}
 
-	public async Task<CreateSubCategoryCommandResponse> Handle(CreateSubCategoryCommand request,
-																CancellationToken cancellationToken)
+	public async Task<Result> Handle(CreateSubCategoryCommand request, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -46,19 +46,11 @@ public class CreateSubCategoryCommandHandler : IRequestHandler<CreateSubCategory
 			await _writeRepository.AddAsync(newSubCategory);
 			await _writeRepository.SaveAsync();
 
-			return new()
-			{
-				IsSucceeded = true,
-				Message = "Sub Category created."
-			};
+			return Result.Success("Sub Category created.");
 		}
 		catch (Exception ex)
 		{
-			return new()
-			{
-				IsSucceeded = false,
-				Message = $"Sub Category creating failed. {ex.Message}"
-			};
+			return Result.Failure($"Error occoured. {ex.Message}");
 		}
 	}
 }

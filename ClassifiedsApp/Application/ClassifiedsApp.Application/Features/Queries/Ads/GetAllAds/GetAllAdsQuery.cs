@@ -1,5 +1,5 @@
-﻿using ClassifiedsApp.Core.Enums;
-using MediatR;
+﻿using ClassifiedsApp.Application.Features.Queries.Common;
+using ClassifiedsApp.Core.Enums;
 
 namespace ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
 
@@ -16,14 +16,8 @@ public class GetAllAdsQuery : IRequest<GetAllAdsQueryResponse>
 */
 
 
-public class GetAllAdsQuery : IRequest<GetAllAdsQueryResponse>
+public class GetAllAdsQuery : GetAllDataQuery<GetAllAdsQueryResponse>
 {
-	public int PageNumber { get; set; } = 1;
-	public int PageSize { get; set; } = 10;
-
-	public string? SortBy { get; set; }
-	public bool IsDescending { get; set; } = true;
-
 	public string? SearchTitle { get; set; }
 	public bool IsFeatured { get; set; }
 

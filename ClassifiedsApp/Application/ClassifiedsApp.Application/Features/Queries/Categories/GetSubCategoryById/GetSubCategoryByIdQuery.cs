@@ -1,8 +1,7 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Features.Queries.Common;
 
 namespace ClassifiedsApp.Application.Features.Queries.Categories.GetSubCategoryById;
 
-public class GetSubCategoryByIdQuery : IRequest<GetSubCategoryByIdQueryResponse>
+public class GetSubCategoryByIdQuery : GetDataByIdQuery<GetSubCategoryByIdQueryResponse>
 {
-	public Guid Id { get; set; }
 }

@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Common.Results;
+using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Users.UpdatePassword;
 
-public class UpdatePasswordCommand : IRequest<UpdatePasswordCommandResponse>
+public class UpdatePasswordCommand : IRequest<Result>
 {
 	public string UserId { get; set; }
 	public string ResetToken { get; set; }

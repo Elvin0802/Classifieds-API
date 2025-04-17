@@ -1,8 +1,7 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Features.Queries.Common;
 
 namespace ClassifiedsApp.Application.Features.Queries.Locations.GetLocationById;
 
-public class GetLocationByIdQuery : IRequest<GetLocationByIdQueryResponse>
+public class GetLocationByIdQuery : GetDataByIdQuery<GetLocationByIdQueryResponse>
 {
-	public Guid Id { get; set; }
 }

@@ -1,9 +1,11 @@
-﻿using ClassifiedsApp.Application.Interfaces.Services.Auth;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Services.Auth;
 using MediatR;
+using System.Security;
 
 namespace ClassifiedsApp.Application.Features.Commands.Auth.ConfirmResetToken;
 
-public class ConfirmResetTokenCommandHandler : IRequestHandler<ConfirmResetTokenCommand, ConfirmResetTokenCommandResponse>
+public class ConfirmResetTokenCommandHandler : IRequestHandler<ConfirmResetTokenCommand, Result>
 {
 	readonly IAuthService _authService;
 
@@ -12,11 +14,18 @@ public class ConfirmResetTokenCommandHandler : IRequestHandler<ConfirmResetToken
 		_authService = authService;
 	}
 
-	public async Task<ConfirmResetTokenCommandResponse> Handle(ConfirmResetTokenCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(ConfirmResetTokenCommand request, CancellationToken cancellationToken)
 	{
-		return new()
+		try
 		{
-			IsSucceeded = await _authService.ConfirmResetTokenAsync(request.UserId!, request.ResetToken!)
-		};
+			if (await _authService.ConfirmResetTokenAsync(request.UserId!, request.ResetToken!))
+				return Result.Success("Reset token confirmed.");
+
+			throw new VerificationException("Reset token not confirmed.");
+		}
+		catch (Exception ex)
+		{
+			return Result.Failure($"Error occoured. {ex.Message}");
+		}
 	}
 }

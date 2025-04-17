@@ -1,10 +1,12 @@
 ﻿using ClassifiedsApp.Application.Dtos.Auth.Token;
 using ClassifiedsApp.Application.Interfaces.Services.Auth;
 using ClassifiedsApp.Application.Services;
+using ClassifiedsApp.Infrastructure.BackgroundJobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Quartz;
 using System.Security.Claims;
 using System.Text;
 
@@ -118,6 +120,58 @@ public static class DIConfig
 		});
 
 		services.AddAuthorization();
+
+		return services;
+	}
+
+	public static IServiceCollection AddBackgroundJobs(this IServiceCollection services)
+	{
+		services.AddQuartz(q =>
+		{
+			// Configure Hourly Job (every 1 hour)
+
+			var hourlyJobKey = new JobKey("HourlyJob");
+
+			q.AddJob<TestJob>(opts => opts.WithIdentity(hourlyJobKey));
+
+			q.AddTrigger(opts => opts
+				.ForJob(hourlyJobKey)
+				.WithIdentity("HourlyJob-trigger")
+				.WithSimpleSchedule(schedule => schedule
+					.WithIntervalInHours(1)
+					.RepeatForever()));
+
+			// Configure Weekly Job (Monday at 12:00)
+			/*
+			var weeklyJobKey = new JobKey("WeeklyJob");
+
+			q.AddJob<TestJob>(opts => opts.WithIdentity(weeklyJobKey));
+
+			q.AddTrigger(opts => opts
+				.ForJob(weeklyJobKey)
+				.WithIdentity("WeeklyJob-trigger")
+				.WithCronSchedule("0 0 12 ? * MON *")); // Every Monday at 12:00
+			*/
+
+			//----
+
+			// Configure Monthly Job (first day of each month at 00:00)
+			/*
+			var monthlyJobKey = new JobKey("MonthlyJob");
+
+			q.AddJob<TestJob>(opts => opts.WithIdentity(monthlyJobKey));
+			
+			q.AddTrigger(opts => opts
+				.ForJob(monthlyJobKey)
+				.WithIdentity("MonthlyJob-trigger")
+				.WithCronSchedule("0 0 0 1 * ?")); // First day of each month at midnight
+			*/
+		});
+
+		services.AddQuartzHostedService(options =>
+		{
+			options.WaitForJobsToComplete = true;
+		});
 
 		return services;
 	}

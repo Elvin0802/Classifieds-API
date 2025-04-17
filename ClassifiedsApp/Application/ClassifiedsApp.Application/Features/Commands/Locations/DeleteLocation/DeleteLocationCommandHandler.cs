@@ -1,22 +1,19 @@
-﻿using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
-using ClassifiedsApp.Application.Interfaces.Services.Cache;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Locations.DeleteLocation;
 
-public class DeleteLocationCommandHandler : IRequestHandler<DeleteLocationCommand, DeleteLocationCommandResponse>
+public class DeleteLocationCommandHandler : IRequestHandler<DeleteLocationCommand, Result>
 {
 	readonly ILocationWriteRepository _writeRepository;
-	readonly ICacheService _cacheService;
 
-	public DeleteLocationCommandHandler(ILocationWriteRepository writeRepository,
-										ICacheService cacheService)
+	public DeleteLocationCommandHandler(ILocationWriteRepository writeRepository)
 	{
 		_writeRepository = writeRepository;
-		_cacheService = cacheService;
 	}
 
-	public async Task<DeleteLocationCommandResponse> Handle(DeleteLocationCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(DeleteLocationCommand request, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -25,21 +22,11 @@ public class DeleteLocationCommandHandler : IRequestHandler<DeleteLocationComman
 
 			await _writeRepository.SaveAsync();
 
-			await _cacheService.RemoveByPrefixAsync("locations_");
-
-			return new()
-			{
-				IsSucceeded = true,
-				Message = $"Location deleted."
-			};
+			return Result.Success("Location deleted successfully.");
 		}
 		catch (Exception ex)
 		{
-			return new()
-			{
-				IsSucceeded = false,
-				Message = $"Location deleting failed. {ex.Message}"
-			};
+			return Result.Failure($"Location deleting failed. {ex.Message}");
 		}
 	}
 }

@@ -1,10 +1,11 @@
-﻿using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
 using ClassifiedsApp.Core.Entities;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Categories.CreateCategory;
 
-public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CreateCategoryCommandResponse>
+public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Result>
 {
 	readonly ICategoryWriteRepository _writeRepository;
 
@@ -13,7 +14,7 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
 		_writeRepository = writeRepository;
 	}
 
-	public async Task<CreateCategoryCommandResponse> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -26,19 +27,11 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
 			await _writeRepository.AddAsync(newCategory);
 			await _writeRepository.SaveAsync();
 
-			return new()
-			{
-				IsSucceeded = true,
-				Message = "Category created."
-			};
+			return Result.Success("Category created.");
 		}
 		catch (Exception ex)
 		{
-			return new()
-			{
-				IsSucceeded = false,
-				Message = $"Category creating failed. {ex.Message}"
-			};
+			return Result.Failure($"Error occoured. {ex.Message}");
 		}
 	}
 }

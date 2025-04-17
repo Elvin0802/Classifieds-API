@@ -1,5 +1,4 @@
-﻿using ClassifiedsApp.Application.Dtos.Cache;
-using ClassifiedsApp.Application.Interfaces.Repositories.AdImages;
+﻿using ClassifiedsApp.Application.Interfaces.Repositories.AdImages;
 using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
 using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
 using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
@@ -7,7 +6,6 @@ using ClassifiedsApp.Application.Interfaces.Repositories.Reports;
 using ClassifiedsApp.Application.Interfaces.Repositories.Users;
 using ClassifiedsApp.Application.Interfaces.Services.Ads;
 using ClassifiedsApp.Application.Interfaces.Services.Auth;
-using ClassifiedsApp.Application.Interfaces.Services.Cache;
 using ClassifiedsApp.Application.Interfaces.Services.Mail;
 using ClassifiedsApp.Application.Interfaces.Services.Users;
 using ClassifiedsApp.Core.Entities;
@@ -20,14 +18,13 @@ using ClassifiedsApp.Infrastructure.Persistence.Repositories.Reports;
 using ClassifiedsApp.Infrastructure.Persistence.Repositories.Users;
 using ClassifiedsApp.Infrastructure.Services.Ads;
 using ClassifiedsApp.Infrastructure.Services.Auth;
-using ClassifiedsApp.Infrastructure.Services.Cache;
+using ClassifiedsApp.Infrastructure.Services.BackgroundJobs;
 using ClassifiedsApp.Infrastructure.Services.Mail;
 using ClassifiedsApp.Infrastructure.Services.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
 
 namespace ClassifiedsApp.Infrastructure;
 
@@ -54,6 +51,10 @@ public static class ServiceRegistration
 		.AddEntityFrameworkStores<ApplicationDbContext>()
 		.AddDefaultTokenProviders();
 
+
+		// caching usage
+		/*
+
 		var cacheConfig = new CacheConfigDto();
 
 		configuration.Bind("RedisCache", cacheConfig);
@@ -79,6 +80,8 @@ public static class ServiceRegistration
 		}
 
 		services.AddScoped<ICacheService, RedisCacheService>();
+		
+		*/
 
 		services.AddScoped<IAdReadRepository, AdReadRepository>();
 		services.AddScoped<IAdWriteRepository, AdWriteRepository>();
@@ -125,5 +128,8 @@ public static class ServiceRegistration
 
 		services.AddScoped<IAuthService, AuthService>();
 		services.AddScoped<IUserService, UserService>();
+		services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+		services.AddScoped<TestJobService>(); // add job service.
 	}
 }

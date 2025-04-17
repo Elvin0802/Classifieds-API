@@ -1,9 +1,7 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Features.Queries.Common;
 
 namespace ClassifiedsApp.Application.Features.Queries.Ads.GetAdById;
 
-public class GetAdByIdQuery : IRequest<GetAdByIdResponse>
+public class GetAdByIdQuery : GetDataByIdQuery<GetAdByIdQueryResponse>
 {
-	public Guid Id { get; set; }
-	public Guid CurrentUserId { get; set; }
 }

@@ -1,10 +1,11 @@
-﻿using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
 using ClassifiedsApp.Core.Entities;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Categories.CreateMainCategory;
 
-public class CreateMainCategoryCommandHandler : IRequestHandler<CreateMainCategoryCommand, CreateMainCategoryCommandResponse>
+public class CreateMainCategoryCommandHandler : IRequestHandler<CreateMainCategoryCommand, Result>
 {
 	readonly IMainCategoryWriteRepository _writeRepository;
 
@@ -13,7 +14,7 @@ public class CreateMainCategoryCommandHandler : IRequestHandler<CreateMainCatego
 		_writeRepository = writeRepository;
 	}
 
-	public async Task<CreateMainCategoryCommandResponse> Handle(CreateMainCategoryCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(CreateMainCategoryCommand request, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -27,11 +28,11 @@ public class CreateMainCategoryCommandHandler : IRequestHandler<CreateMainCatego
 			await _writeRepository.AddAsync(newMainCategory);
 			await _writeRepository.SaveAsync();
 
-			return new() { IsSucceeded = true, Message = "Main Category created." };
+			return Result.Success("Main Category created.");
 		}
 		catch (Exception ex)
 		{
-			return new() { IsSucceeded = false, Message = $"Main Category creating failed. {ex.Message}" };
+			return Result.Failure($"Error occoured. {ex.Message}");
 		}
 	}
 }

@@ -1,31 +1,28 @@
 ﻿using AutoMapper;
+using ClassifiedsApp.Application.Common.Results;
 using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
-using ClassifiedsApp.Application.Interfaces.Services.Cache;
 using ClassifiedsApp.Core.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace ClassifiedsApp.Application.Features.Commands.Locations.CreateLocation;
 
-public class CreateLocationCommandHandler : IRequestHandler<CreateLocationCommand, CreateLocationCommandResponse>
+public class CreateLocationCommandHandler : IRequestHandler<CreateLocationCommand, Result>
 {
 	readonly ILocationWriteRepository _repository;
 	readonly IMapper _mapper;
 	readonly ILogger<CreateLocationCommandHandler> _logger;
-	readonly ICacheService _cacheService;
 
 	public CreateLocationCommandHandler(ILocationWriteRepository repository,
 										IMapper mapper,
-										ILogger<CreateLocationCommandHandler> logger,
-										ICacheService cacheService)
+										ILogger<CreateLocationCommandHandler> logger)
 	{
 		_repository = repository;
 		_mapper = mapper;
 		_logger = logger;
-		_cacheService = cacheService;
 	}
 
-	public async Task<CreateLocationCommandResponse> Handle(CreateLocationCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(CreateLocationCommand request, CancellationToken cancellationToken)
 	{
 		_logger.LogInformation("Handling CreateLocationCommand for City: {City}, Country: {Country}", request.City, request.Country);
 
@@ -42,26 +39,15 @@ public class CreateLocationCommandHandler : IRequestHandler<CreateLocationComman
 			await _repository.AddAsync(location);
 			await _repository.SaveAsync();
 
-			//await _cacheService.RemoveByPrefixAsync("locations_");
-			await _cacheService.RemoveByPrefixAsync($":user:anonymous:locations_");
-
 			_logger.LogInformation("Location created successfully for City: {City}, Country: {Country}", request.City, request.Country);
 
-			return new()
-			{
-				IsSucceeded = true,
-				Message = "Location created."
-			};
+			return Result.Success("Location created successfully.");
 		}
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Failed to create location for City: {City}, Country: {Country}", request.City, request.Country);
 
-			return new()
-			{
-				IsSucceeded = false,
-				Message = $"Location creating failed.  {ex.Message}"
-			};
+			return Result.Failure($"Location creation failed. {ex.Message}");
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
 using ClassifiedsApp.Application.Features.Queries.Users.GetAllSelectedAds;
 using ClassifiedsApp.Application.Features.Queries.Users.GetUserData;
 using ClassifiedsApp.Core.Enums;
@@ -22,16 +23,13 @@ public class ProfileController : ControllerBase
 	}
 
 	[HttpPost("[action]")]
-	public async Task<ActionResult<GetUserDataQueryResponse>> GetUserData()
+	public async Task<ActionResult<Result<GetUserDataQueryResponse>>> GetUserData()
 	{
-		return Ok(await _mediator.Send(new GetUserDataQuery()
-		{
-			AppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!)
-		}));
+		return Ok(await _mediator.Send(new GetUserDataQuery()));
 	}
 
 	[HttpPost("[action]")]
-	public async Task<ActionResult<GetAllAdsQueryResponse>> GetActiveAds()
+	public async Task<ActionResult<Result<GetAllAdsQueryResponse>>> GetActiveAds()
 	{
 		return Ok(await _mediator.Send(new GetAllAdsQuery()
 		{
@@ -41,7 +39,7 @@ public class ProfileController : ControllerBase
 	}
 
 	[HttpPost("[action]")]
-	public async Task<ActionResult<GetAllAdsQueryResponse>> GetPendingAds()
+	public async Task<ActionResult<Result<GetAllAdsQueryResponse>>> GetPendingAds()
 	{
 		return Ok(await _mediator.Send(new GetAllAdsQuery()
 		{
@@ -51,7 +49,7 @@ public class ProfileController : ControllerBase
 	}
 
 	[HttpPost("[action]")]
-	public async Task<ActionResult<GetAllAdsQueryResponse>> GetExpiredAds()
+	public async Task<ActionResult<Result<GetAllAdsQueryResponse>>> GetExpiredAds()
 	{
 		return Ok(await _mediator.Send(new GetAllAdsQuery()
 		{
@@ -61,7 +59,7 @@ public class ProfileController : ControllerBase
 	}
 
 	[HttpPost("[action]")]
-	public async Task<ActionResult<GetAllAdsQueryResponse>> GetRejectedAds()
+	public async Task<ActionResult<Result<GetAllAdsQueryResponse>>> GetRejectedAds()
 	{
 		return Ok(await _mediator.Send(new GetAllAdsQuery()
 		{
@@ -71,7 +69,7 @@ public class ProfileController : ControllerBase
 	}
 
 	[HttpPost("[action]")]
-	public async Task<ActionResult<GetAllSelectedAdsQueryResponse>> GetSelectedAds()
+	public async Task<ActionResult<Result<GetAllSelectedAdsQueryResponse>>> GetSelectedAds()
 	{
 		return Ok(await _mediator.Send(new GetAllSelectedAdsQuery()
 		{

@@ -1,5 +1,7 @@
-﻿using ClassifiedsApp.Application.Dtos.Ads;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Dtos.Ads;
 using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
+using ClassifiedsApp.Application.Interfaces.Services.Users;
 using ClassifiedsApp.Core.Entities;
 using ClassifiedsApp.Core.Enums;
 using MediatR;
@@ -7,114 +9,125 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClassifiedsApp.Application.Features.Queries.Ads.GetAllAds;
 
-public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, GetAllAdsQueryResponse>
+public class GetAllAdsQueryHandler : IRequestHandler<GetAllAdsQuery, Result<GetAllAdsQueryResponse>>
 {
 	private readonly IAdReadRepository _repository;
+	private readonly ICurrentUserService _currentUserService;
 
-	public GetAllAdsQueryHandler(IAdReadRepository repository)
+	public GetAllAdsQueryHandler(IAdReadRepository repository, ICurrentUserService currentUserService)
 	{
 		_repository = repository;
+		_currentUserService = currentUserService;
 	}
 
-	public async Task<GetAllAdsQueryResponse> Handle(GetAllAdsQuery request, CancellationToken cancellationToken)
+	public async Task<Result<GetAllAdsQueryResponse>> Handle(GetAllAdsQuery request, CancellationToken cancellationToken)
 	{
-		// Start with base query
-		var query = _repository.GetAll(false)
-								.Include(ad => ad.Images)
-								.Include(ad => ad.AppUser)
-								.Include(ad => ad.Location)
-								.Include(ad => ad.Category)
-								.Include(ad => ad.MainCategory)
-								.Include(ad => ad.SubCategoryValues)
-									.ThenInclude(scv => scv.SubCategory)
-								.Include(ad => ad.SelectorUsers)
-									.ThenInclude(su => su.AppUser)
-								.AsQueryable();
-
-		if (!(request.AdStatus.HasValue))
-			query = query.Where(ad => ad.Status == AdStatus.Active);
-		else
-			query = query.Where(ad => ad.Status == request.AdStatus.Value);
-
-		if (request.SearchedAppUserId.HasValue)
+		try
 		{
-			query = query.Where(ad => ad.AppUserId == request.SearchedAppUserId.Value);
+			// Start with base query
+			var query = _repository.GetAll(false)
+									.Include(ad => ad.Images)
+									.Include(ad => ad.AppUser)
+									.Include(ad => ad.Location)
+									.Include(ad => ad.Category)
+									.Include(ad => ad.MainCategory)
+									.Include(ad => ad.SubCategoryValues)
+										.ThenInclude(scv => scv.SubCategory)
+									.Include(ad => ad.SelectorUsers)
+										.ThenInclude(su => su.AppUser)
+									.AsQueryable();
 
-			request.PageSize = query.Count();
-		}
+			if (!(request.AdStatus.HasValue))
+				query = query.Where(ad => ad.Status == AdStatus.Active);
+			else
+				query = query.Where(ad => ad.Status == request.AdStatus.Value);
 
-		// get vip ads.
-		if (request.IsFeatured)
-		{
-			query = query.Where(ad => ad.IsFeatured && ad.FeatureEndDate > DateTimeOffset.UtcNow)
-						 .OrderByDescending(ad => ad.FeaturePriority)
-						 .ThenByDescending(ad => ad.FeatureStartDate);
-		}
-		else
-			query = query.Where(ad => ad.IsFeatured == false);
-
-		// Apply search filter
-		var searchTerm = request.SearchTitle?.Trim().ToLower();
-
-		if (!string.IsNullOrWhiteSpace(searchTerm))
-			query = query.Where(ad => ad.Title.ToLower().Contains(searchTerm));
-
-		// Apply price filters
-		if (request.MinPrice.HasValue)
-			query = query.Where(ad => ad.Price >= request.MinPrice.Value);
-
-		if (request.MaxPrice.HasValue)
-			query = query.Where(ad => ad.Price <= request.MaxPrice.Value);
-
-		// Apply category filters
-		if (request.CategoryId.HasValue)
-			query = query.Where(ad => ad.CategoryId == request.CategoryId.Value);
-
-		if (request.MainCategoryId.HasValue)
-			query = query.Where(ad => ad.MainCategoryId == request.MainCategoryId.Value);
-
-		// Apply location filters
-		if (request.LocationId.HasValue)
-			query = query.Where(ad => ad.LocationId == request.LocationId.Value);
-
-		if (request.SubCategoryValues is not null && request.SubCategoryValues.Count > 0)
-			foreach (var v in request.SubCategoryValues)
-				query = query.Where(ad => ad.SubCategoryValues.Any(scv => scv.SubCategoryId == v.Key && scv.Value == v.Value));
-
-		// Apply sorting
-		query = ApplySorting(query, request.SortBy, request.IsDescending);
-
-		// Get total count before pagination
-		var totalCount = await query.CountAsync(cancellationToken);
-
-		// Apply pagination
-		var paginatedQuery = query
-			.Skip((request.PageNumber - 1) * request.PageSize)
-			.Take(request.PageSize);
-
-		// Get results
-		var list = await paginatedQuery
-			.Select(p => new AdPreviewDto
+			if (request.SearchedAppUserId.HasValue)
 			{
-				Id = p.Id,
-				Title = p.Title,
-				Price = p.Price,
-				LocationCityName = p.Location.City,
-				IsNew = p.IsNew,
-				IsFeatured = p.IsFeatured,
-				MainImageUrl = p.Images.FirstOrDefault(img => img.SortOrder == 0)!.Url,
-				IsSelected = request.CurrentAppUserId.HasValue && p.SelectorUsers.Any(su => su.AppUserId == request.CurrentAppUserId.Value),
-				UpdatedAt = p.UpdatedAt,
-			})
-			.ToListAsync(cancellationToken);
+				query = query.Where(ad => ad.AppUserId == request.SearchedAppUserId.Value);
 
-		return new GetAllAdsQueryResponse
+				request.PageSize = query.Count();
+			}
+
+			// get vip ads.
+			if (request.IsFeatured)
+			{
+				query = query.Where(ad => ad.IsFeatured && ad.FeatureEndDate > DateTimeOffset.UtcNow)
+							 .OrderByDescending(ad => ad.FeaturePriority)
+							 .ThenByDescending(ad => ad.FeatureStartDate);
+			}
+			else
+				query = query.Where(ad => ad.IsFeatured == false);
+
+			// Apply search filter
+			var searchTerm = request.SearchTitle?.Trim().ToLower();
+
+			if (!string.IsNullOrWhiteSpace(searchTerm))
+				query = query.Where(ad => ad.Title.ToLower().Contains(searchTerm));
+
+			// Apply price filters
+			if (request.MinPrice.HasValue)
+				query = query.Where(ad => ad.Price >= request.MinPrice.Value);
+
+			if (request.MaxPrice.HasValue)
+				query = query.Where(ad => ad.Price <= request.MaxPrice.Value);
+
+			// Apply category filters
+			if (request.CategoryId.HasValue)
+				query = query.Where(ad => ad.CategoryId == request.CategoryId.Value);
+
+			if (request.MainCategoryId.HasValue)
+				query = query.Where(ad => ad.MainCategoryId == request.MainCategoryId.Value);
+
+			// Apply location filters
+			if (request.LocationId.HasValue)
+				query = query.Where(ad => ad.LocationId == request.LocationId.Value);
+
+			if (request.SubCategoryValues is not null && request.SubCategoryValues.Count > 0)
+				foreach (var v in request.SubCategoryValues)
+					query = query.Where(ad => ad.SubCategoryValues.Any(scv => scv.SubCategoryId == v.Key && scv.Value == v.Value));
+
+			// Apply sorting
+			query = ApplySorting(query, request.SortBy, request.IsDescending);
+
+			// Get total count before pagination
+			var totalCount = await query.CountAsync(cancellationToken);
+
+			// Apply pagination
+			var paginatedQuery = query
+				.Skip((request.PageNumber - 1) * request.PageSize)
+				.Take(request.PageSize);
+
+			// Get results
+			var list = await paginatedQuery
+				.Select(p => new AdPreviewDto
+				{
+					Id = p.Id,
+					Title = p.Title,
+					Price = p.Price,
+					LocationCityName = p.Location.City,
+					IsNew = p.IsNew,
+					IsFeatured = p.IsFeatured,
+					MainImageUrl = p.Images.FirstOrDefault(img => img.SortOrder == 0)!.Url,
+					IsSelected = _currentUserService.UserId.HasValue && p.SelectorUsers.Any(su => su.AppUserId == _currentUserService.UserId.Value),
+					UpdatedAt = p.UpdatedAt,
+				})
+				.ToListAsync(cancellationToken);
+
+			var data = new GetAllAdsQueryResponse()
+			{
+				Items = list,
+				PageNumber = request.PageNumber,
+				PageSize = request.PageSize,
+				TotalCount = totalCount
+			};
+
+			return Result.Success(data, "Ads retrieved successfully.");
+		}
+		catch (Exception ex)
 		{
-			Items = list,
-			PageNumber = request.PageNumber,
-			PageSize = request.PageSize,
-			TotalCount = totalCount
-		};
+			return Result.Failure<GetAllAdsQueryResponse>($"Failed to retrieve Ads: {ex.Message}");
+		}
 	}
 
 	private IQueryable<Ad> ApplySorting(IQueryable<Ad> query, string? sortBy, bool isDescending)

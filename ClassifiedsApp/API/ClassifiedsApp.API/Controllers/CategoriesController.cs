@@ -1,4 +1,5 @@
-﻿using ClassifiedsApp.Application.Features.Commands.Categories.CreateCategory;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Features.Commands.Categories.CreateCategory;
 using ClassifiedsApp.Application.Features.Commands.Categories.CreateMainCategory;
 using ClassifiedsApp.Application.Features.Commands.Categories.CreateSubCategory;
 using ClassifiedsApp.Application.Features.Queries.Categories.GetAllCategories;
@@ -29,19 +30,19 @@ public class CategoriesController : ControllerBase
 
 	[HttpPost("create/category")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-	public async Task<ActionResult<CreateCategoryCommandResponse>> Create([FromBody] CreateCategoryCommand command)
+	public async Task<ActionResult<Result>> Create([FromBody] CreateCategoryCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpGet("all/category")]
-	public async Task<ActionResult<GetAllCategoriesQueryResponse>> GetAll([FromQuery] GetAllCategoriesQuery query)
+	public async Task<ActionResult<Result<GetAllCategoriesQueryResponse>>> GetAll([FromQuery] GetAllCategoriesQuery query)
 	{
 		return Ok(await _mediator.Send(query));
 	}
 
 	[HttpGet("byId/category")]
-	public async Task<ActionResult<GetCategoryByIdQueryResponse>> GetById([FromQuery] GetCategoryByIdQuery query)
+	public async Task<ActionResult<Result<GetCategoryByIdQueryResponse>>> GetById([FromQuery] GetCategoryByIdQuery query)
 	{
 		return Ok(await _mediator.Send(query));
 	}
@@ -52,19 +53,19 @@ public class CategoriesController : ControllerBase
 
 	[HttpPost("create/main-category")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-	public async Task<ActionResult<CreateMainCategoryCommandResponse>> Create([FromBody] CreateMainCategoryCommand command)
+	public async Task<ActionResult<Result>> Create([FromBody] CreateMainCategoryCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpGet("all/main-category")]
-	public async Task<ActionResult<GetAllMainCategoriesQueryResponse>> GetAll([FromQuery] GetAllMainCategoriesQuery query)
+	public async Task<ActionResult<Result<GetAllMainCategoriesQueryResponse>>> GetAll([FromQuery] GetAllMainCategoriesQuery query)
 	{
 		return Ok(await _mediator.Send(query));
 	}
 
 	[HttpGet("byId/main-category")]
-	public async Task<ActionResult<GetMainCategoryByIdQueryResponse>> GetById([FromQuery] GetMainCategoryByIdQuery query)
+	public async Task<ActionResult<Result<GetMainCategoryByIdQueryResponse>>> GetById([FromQuery] GetMainCategoryByIdQuery query)
 	{
 		return Ok(await _mediator.Send(query));
 	}
@@ -75,19 +76,19 @@ public class CategoriesController : ControllerBase
 
 	[HttpPost("create/sub-category")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-	public async Task<ActionResult<CreateSubCategoryCommandResponse>> Create([FromBody] CreateSubCategoryCommand command)
+	public async Task<ActionResult<Result>> Create([FromBody] CreateSubCategoryCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpGet("all/sub-category")]
-	public async Task<ActionResult<GetAllSubCategoriesQueryResponse>> GetAll([FromQuery] GetAllSubCategoriesQuery query)
+	public async Task<ActionResult<Result<GetAllSubCategoriesQueryResponse>>> GetAll([FromQuery] GetAllSubCategoriesQuery query)
 	{
 		return Ok(await _mediator.Send(query));
 	}
 
 	[HttpGet("byId/sub-category")]
-	public async Task<ActionResult<GetSubCategoryByIdQueryResponse>> GetById([FromQuery] GetSubCategoryByIdQuery query)
+	public async Task<ActionResult<Result<GetSubCategoryByIdQueryResponse>>> GetById([FromQuery] GetSubCategoryByIdQuery query)
 	{
 		return Ok(await _mediator.Send(query));
 	}

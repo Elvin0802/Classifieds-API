@@ -1,9 +1,11 @@
-﻿using ClassifiedsApp.Application.Interfaces.Services.Auth;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Dtos.Auth.Token;
+using ClassifiedsApp.Application.Interfaces.Services.Auth;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Auth.Login;
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandResponse>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<AuthTokenDto>>
 {
 	readonly IAuthService _authService;
 
@@ -12,11 +14,16 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandRes
 		_authService = authService;
 	}
 
-	public async Task<LoginCommandResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
+	public async Task<Result<AuthTokenDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
 	{
-		return new LoginCommandResponse()
+		try
 		{
-			AuthToken = await _authService.LoginAsync(request.Email, request.Password)
-		};
+			return Result.Success(await _authService.LoginAsync(request.Email, request.Password),
+									"Login successful.");
+		}
+		catch (Exception ex)
+		{
+			return Result.Failure<AuthTokenDto>($"Error occoured. {ex.Message}");
+		}
 	}
 }

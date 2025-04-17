@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Common.Results;
+using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Users.ChangePassword;
 
-public class ChangePasswordCommand : IRequest<ChangePasswordCommandResponse>
+public class ChangePasswordCommand : IRequest<Result>
 {
 	public string UserId { get; set; }
 	public string OldPassword { get; set; }

@@ -1,9 +1,9 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Common.Results;
+using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Users.UnselectAd;
 
-public class UnselectAdCommand : IRequest<UnselectAdCommandResponse>
+public class UnselectAdCommand : IRequest<Result>
 {
-	public Guid SelectorAppUserId { get; set; }
 	public Guid SelectAdId { get; set; }
 }

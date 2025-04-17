@@ -1,9 +1,10 @@
-﻿using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Categories.DeleteSubCategory;
 
-public class DeleteSubCategoryCommandHandler : IRequestHandler<DeleteSubCategoryCommand, DeleteSubCategoryCommandResponse>
+public class DeleteSubCategoryCommandHandler : IRequestHandler<DeleteSubCategoryCommand, Result>
 {
 	readonly ISubCategoryWriteRepository _repository;
 
@@ -12,8 +13,7 @@ public class DeleteSubCategoryCommandHandler : IRequestHandler<DeleteSubCategory
 		_repository = repository;
 	}
 
-	public async Task<DeleteSubCategoryCommandResponse> Handle(DeleteSubCategoryCommand request,
-																CancellationToken cancellationToken)
+	public async Task<Result> Handle(DeleteSubCategoryCommand request, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -22,19 +22,11 @@ public class DeleteSubCategoryCommandHandler : IRequestHandler<DeleteSubCategory
 
 			await _repository.SaveAsync();
 
-			return new()
-			{
-				IsSucceeded = true,
-				Message = $"Sub Category deleted."
-			};
+			return Result.Success("Sub Category deleted.");
 		}
 		catch (Exception ex)
 		{
-			return new()
-			{
-				IsSucceeded = false,
-				Message = $"Sub Category deleting failed. {ex.Message}"
-			};
+			return Result.Failure($"Error occoured. {ex.Message}");
 		}
 	}
 }

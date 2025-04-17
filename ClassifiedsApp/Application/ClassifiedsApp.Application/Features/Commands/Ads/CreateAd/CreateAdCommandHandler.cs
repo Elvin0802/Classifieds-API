@@ -1,19 +1,24 @@
-﻿using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Repositories.Ads;
+using ClassifiedsApp.Application.Interfaces.Services.Users;
 using ClassifiedsApp.Core.Entities;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Ads.CreateAd;
 
-public class CreateAdCommandHandler : IRequestHandler<CreateAdCommand, CreateAdCommandResponse>
+public class CreateAdCommandHandler : IRequestHandler<CreateAdCommand, Result>
 {
 	readonly IAdWriteRepository _writeRepository;
 	readonly IAdSubCategoryValueWriteRepository _adSubCategoryWriteRepository;
+	readonly ICurrentUserService _currentUserService;
 
 	public CreateAdCommandHandler(IAdWriteRepository writeRepository,
-								IAdSubCategoryValueWriteRepository adSubCategoryWriteRepository)
+								  IAdSubCategoryValueWriteRepository adSubCategoryWriteRepository,
+								   ICurrentUserService currentUserService)
 	{
 		_writeRepository = writeRepository;
 		_adSubCategoryWriteRepository = adSubCategoryWriteRepository;
+		_currentUserService = currentUserService;
 	}
 
 	/*
@@ -92,7 +97,7 @@ public class CreateAdCommandHandler : IRequestHandler<CreateAdCommand, CreateAdC
 
 	*/
 
-	public async Task<CreateAdCommandResponse> Handle(CreateAdCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(CreateAdCommand request, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -105,7 +110,7 @@ public class CreateAdCommandHandler : IRequestHandler<CreateAdCommand, CreateAdC
 				CategoryId = request.CategoryId,
 				MainCategoryId = request.MainCategoryId,
 				LocationId = request.LocationId,
-				AppUserId = request.AppUserId,
+				AppUserId = _currentUserService.UserId!.Value,
 				ExpiresAt = DateTimeOffset.MinValue
 			};
 
@@ -149,356 +154,11 @@ public class CreateAdCommandHandler : IRequestHandler<CreateAdCommand, CreateAdC
 			await _adSubCategoryWriteRepository.AddRangeAsync(newAd.SubCategoryValues.ToList());
 			await _writeRepository.SaveAsync();
 
-			return new()
-			{
-				IsSucceeded = true,
-				Message = "Ad created."
-			};
+			return Result.Success("Ad created successfully.");
 		}
 		catch (Exception ex)
 		{
-			return new()
-			{
-				IsSucceeded = false,
-				Message = $"Ad creating failed. {ex.Message}"
-			};
+			return Result.Failure($"Error occoured. {ex.Message}");
 		}
 	}
 }
-
-//using CloudinaryDotNet;
-//using CloudinaryDotNet.Actions;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-//using System;
-//using System.IO;
-//using System.Threading.Tasks;
-
-//namespace YourApi.Controllers
-//{
-//	[Route("api/[controller]")]
-//	[ApiController]
-//	public class CloudinaryController : ControllerBase
-//	{
-//		private readonly Cloudinary _cloudinary;
-
-//		public CloudinaryController(IConfiguration configuration)
-//		{
-//			// Get Cloudinary configuration from appsettings.json
-//			var cloudinaryAccount = new Account(
-//				configuration["Cloudinary:CloudName"],
-//				configuration["Cloudinary:ApiKey"],
-//				configuration["Cloudinary:ApiSecret"]);
-
-//			_cloudinary = new Cloudinary(cloudinaryAccount);
-//		}
-
-//		[HttpPost("upload")]
-//		public async Task<IActionResult> UploadImage(IFormFile file)
-//		{
-//			if (file == null || file.Length == 0)
-//				return BadRequest("No file uploaded");
-
-//			try
-//			{
-//				// Validate file type if needed
-//				if (!IsImageFile(file))
-//					return BadRequest("Only image files are allowed");
-
-//				using (var stream = file.OpenReadStream())
-//				{
-//					// Create upload parameters
-//					var uploadParams = new ImageUploadParams()
-//					{
-//						File = new FileDescription(file.FileName, stream),
-//						UseFilename = true,
-//						UniqueFilename = true,
-//						Overwrite = false,
-//						// Optional: Add transformation to resize or crop the image
-//						Transformation = new Transformation()
-//							.Width(800)
-//							.Height(600)
-//							.Crop("limit")
-//					};
-
-//					// Upload to Cloudinary
-//					var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-
-//					// Check if upload was successful
-//					if (uploadResult.Error != null)
-//					{
-//						return StatusCode(500, $"Upload failed: {uploadResult.Error.Message}");
-//					}
-
-//					// Return the result with URLs and other information
-//					return Ok(new
-//					{
-//						PublicId = uploadResult.PublicId,
-//						Url = uploadResult.SecureUrl.ToString(),
-//						Format = uploadResult.Format,
-//						Width = uploadResult.Width,
-//						Height = uploadResult.Height
-//					});
-//				}
-//			}
-//			catch (Exception ex)
-//			{
-//				return StatusCode(500, $"Internal server error: {ex.Message}");
-//			}
-//		}
-
-//		[HttpPost("upload-base64")]
-//		public async Task<IActionResult> UploadBase64Image([FromBody] Base64ImageUploadModel model)
-//		{
-//			if (string.IsNullOrEmpty(model.Base64Image))
-//				return BadRequest("No image data provided");
-
-//			try
-//			{
-//				// Create upload parameters for base64 image
-//				var uploadParams = new ImageUploadParams()
-//				{
-//					File = new FileDescription($"data:image/png;base64,{model.Base64Image}"),
-//					UseFilename = false,
-//					UniqueFilename = true,
-//					Folder = model.Folder ?? "uploads"
-//				};
-
-//				// Upload to Cloudinary
-//				var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-
-//				// Check if upload was successful
-//				if (uploadResult.Error != null)
-//				{
-//					return StatusCode(500, $"Upload failed: {uploadResult.Error.Message}");
-//				}
-
-//				// Return the result
-//				return Ok(new
-//				{
-//					PublicId = uploadResult.PublicId,
-//					Url = uploadResult.SecureUrl.ToString(),
-//					Format = uploadResult.Format,
-//					Width = uploadResult.Width,
-//					Height = uploadResult.Height
-//				});
-//			}
-//			catch (Exception ex)
-//			{
-//				return StatusCode(500, $"Internal server error: {ex.Message}");
-//			}
-//		}
-
-//		[HttpDelete("delete/{publicId}")]
-//		public async Task<IActionResult> DeleteImage(string publicId)
-//		{
-//			if (string.IsNullOrEmpty(publicId))
-//				return BadRequest("Public ID is required");
-
-//			try
-//			{
-//				// Create deletion parameters
-//				var deletionParams = new DeletionParams(publicId);
-
-//				// Delete from Cloudinary
-//				var result = await _cloudinary.DestroyAsync(deletionParams);
-
-//				// Check if deletion was successful
-//				if (result.Error != null)
-//				{
-//					return StatusCode(500, $"Deletion failed: {result.Error.Message}");
-//				}
-
-//				return Ok(new { Message = "Image deleted successfully", Result = result.Result });
-//			}
-//			catch (Exception ex)
-//			{
-//				return StatusCode(500, $"Internal server error: {ex.Message}");
-//			}
-//		}
-
-//		private bool IsImageFile(IFormFile file)
-//		{
-//			// Check file extension and/or mime type
-//			var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-//			var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-//			return !string.IsNullOrEmpty(fileExtension) &&
-//				   allowedExtensions.Contains(fileExtension) &&
-//				   file.ContentType.StartsWith("image/");
-//		}
-//	}
-
-//	public class Base64ImageUploadModel
-//	{
-//		public string Base64Image { get; set; }
-//		public string Folder { get; set; }
-//	}
-//}
-
-
-
-
-
-
-//using CloudinaryDotNet;
-//using CloudinaryDotNet.Actions;
-//using MediatR;
-//using Microsoft.AspNetCore.Http;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading;
-//using System.Threading.Tasks;
-
-//namespace YourApp.Features.Products
-//{
-//	// Models
-//	public class Product
-//	{
-//		public int Id { get; set; }
-//		public string Name { get; set; }
-//		public decimal Price { get; set; }
-//		public string Description { get; set; }
-//		public ICollection<PImage> ProductImages { get; set; } = new List<PImage>();
-//	}
-
-//	public class PImage
-//	{
-//		public int Id { get; set; }
-//		public string Url { get; set; }
-//		public int ProductId { get; set; }
-//		public Product Product { get; set; }
-//	}
-
-//	// Command Request
-//	public class CreateProductCommand : IRequest<CreateProductResponse>
-//	{
-//		public string Name { get; set; }
-//		public decimal Price { get; set; }
-//		public string Description { get; set; }
-//		public List<IFormFile> ImageFiles { get; set; }
-//	}
-
-//	public class ProductImageDto
-//	{
-//		public int Id { get; set; }
-//		public string Url { get; set; }
-//	}
-
-//	public class CreateProductResponse
-//	{
-//		public int ProductId { get; set; }
-//		public string Name { get; set; }
-//		public decimal Price { get; set; }
-//		public string Description { get; set; }
-//		public List<ProductImageDto> Images { get; set; } = new List<ProductImageDto>();
-//	}
-
-//	// Command Handler
-//	public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, CreateProductResponse>
-//	{
-//		private readonly IProductRepository _productRepository;
-//		private readonly Cloudinary _cloudinary;
-
-//		public CreateProductCommandHandler(
-//			IProductRepository productRepository,
-//			IConfiguration configuration)
-//		{
-//			_productRepository = productRepository;
-
-//			// Initialize Cloudinary
-//			var cloudinaryAccount = new Account(
-//				configuration["Cloudinary:CloudName"],
-//				configuration["Cloudinary:ApiKey"],
-//				configuration["Cloudinary:ApiSecret"]);
-
-//			_cloudinary = new Cloudinary(cloudinaryAccount);
-//		}
-
-//		public async Task<CreateProductResponse> Handle(
-//			CreateProductCommand request,
-//			CancellationToken cancellationToken)
-//		{
-//			// 1. Create Product entity first (without images)
-//			var product = new Product
-//			{
-//				Name = request.Name,
-//				Price = request.Price,
-//				Description = request.Description,
-//				ProductImages = new List<PImage>()
-//			};
-
-//			// 2. Upload all images to Cloudinary and link them to the product
-//			if (request.ImageFiles != null && request.ImageFiles.Any())
-//			{
-//				foreach (var imageFile in request.ImageFiles)
-//				{
-//					if (imageFile.Length > 0)
-//					{
-//						string imageUrl = await UploadImageToCloudinary(imageFile);
-
-//						if (!string.IsNullOrEmpty(imageUrl))
-//						{
-//							product.ProductImages.Add(new PImage { Url = imageUrl });
-//						}
-//					}
-//				}
-//			}
-
-//			// 3. Save to database
-//			await _productRepository.AddProductAsync(product, cancellationToken);
-
-//			// 4. Return response
-//			return new CreateProductResponse
-//			{
-//				ProductId = product.Id,
-//				Name = product.Name,
-//				Price = product.Price,
-//				Description = product.Description,
-//				Images = product.ProductImages.Select(img => new ProductImageDto
-//				{
-//					Id = img.Id,
-//					Url = img.Url
-//				}).ToList()
-//			};
-//		}
-
-//		private async Task<string> UploadImageToCloudinary(IFormFile imageFile)
-//		{
-//			try
-//			{
-//				using (var stream = imageFile.OpenReadStream())
-//				{
-//					var uploadParams = new ImageUploadParams
-//					{
-//						File = new FileDescription(imageFile.FileName, stream),
-//						Folder = "products",
-//						UseFilename = true,
-//						UniqueFilename = true
-//					};
-
-//					var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-//					if (uploadResult.Error != null)
-//					{
-//						throw new ApplicationException($"Failed to upload image: {uploadResult.Error.Message}");
-//					}
-
-//					return uploadResult.SecureUrl.ToString();
-//				}
-//			}
-//			catch (Exception ex)
-//			{
-//				// Log error
-//				Console.WriteLine($"Error uploading image: {ex.Message}");
-//				return null;
-//			}
-//		}
-//	}
-
-//	// Repository Interface
-//	public interface IProductRepository
-//	{
-//		Task AddProductAsync(Product product, CancellationToken cancellationToken);
-//	}
-//}

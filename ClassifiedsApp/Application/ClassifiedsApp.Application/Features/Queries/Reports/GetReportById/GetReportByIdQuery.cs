@@ -1,8 +1,7 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Features.Queries.Common;
 
 namespace ClassifiedsApp.Application.Features.Queries.Reports.GetReportById;
 
-public class GetReportByIdQuery : IRequest<GetReportByIdQueryResponse>
+public class GetReportByIdQuery : GetDataByIdQuery<GetReportByIdQueryResponse>
 {
-	public Guid ReportId { get; set; }
 }

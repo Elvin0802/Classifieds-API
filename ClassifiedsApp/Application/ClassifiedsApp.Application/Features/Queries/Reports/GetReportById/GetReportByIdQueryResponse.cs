@@ -1,8 +1,8 @@
 ﻿using ClassifiedsApp.Application.Dtos.Reports;
+using ClassifiedsApp.Application.Features.Queries.Common;
 
 namespace ClassifiedsApp.Application.Features.Queries.Reports.GetReportById;
 
-public class GetReportByIdQueryResponse
+public class GetReportByIdQueryResponse : GetDataByIdQueryResponse<ReportDto>
 {
-	public ReportDto? Item { get; set; }
 }

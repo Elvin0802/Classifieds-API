@@ -1,91 +1,51 @@
 ﻿using AutoMapper;
+using ClassifiedsApp.Application.Common.Results;
 using ClassifiedsApp.Application.Dtos.Locations;
 using ClassifiedsApp.Application.Interfaces.Repositories.Locations;
-using ClassifiedsApp.Application.Interfaces.Services.Cache;
-using ClassifiedsApp.Core.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClassifiedsApp.Application.Features.Queries.Locations.GetAllLocations;
 
-public class GetAllLocationsQueryHandler : IRequestHandler<GetAllLocationsQuery, GetAllLocationsQueryResponse>
+public class GetAllLocationsQueryHandler : IRequestHandler<GetAllLocationsQuery, Result<GetAllLocationsQueryResponse>>
 {
 	readonly ILocationReadRepository _repository;
 	readonly IMapper _mapper;
-	readonly ICacheService _cacheService;
 
-	public GetAllLocationsQueryHandler(ILocationReadRepository repository, IMapper mapper, ICacheService cacheService)
+	public GetAllLocationsQueryHandler(ILocationReadRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;
-		_cacheService = cacheService;
 	}
 
-	public async Task<GetAllLocationsQueryResponse> Handle(GetAllLocationsQuery request, CancellationToken cancellationToken)
+	public async Task<Result<GetAllLocationsQueryResponse>> Handle(GetAllLocationsQuery request, CancellationToken cancellationToken)
 	{
 		/*
 			Caching Behavior executes caching with data.
 			This code called when store does not have any data.
 		*/
-
-		var query = _repository.GetAll(false);
-
-		if (!string.IsNullOrEmpty(request.SortBy))
-			query = ApplySorting(query, request.SortBy, request.IsDescending);
-		else
-			query = request.IsDescending ?
-					query.OrderByDescending(p => p.CreatedAt) :
-					query.OrderBy(p => p.CreatedAt);
-
-		var totalCount = await query.CountAsync(cancellationToken);
-
-		var list = await query.Skip((request.PageNumber - 1) * request.PageSize)
-							  .Take(request.PageSize)
-							  .Select(p => _mapper.Map<LocationDto>(p))
-							  .ToListAsync(cancellationToken);
-
-		await Task.Delay(1200, cancellationToken);
-
-		return new()
+		try
 		{
-			Items = list,
-			PageNumber = 1,
-			PageSize = list.Count,
-			TotalCount = list.Count
-		};
-	}
+			var query = _repository.GetAll(false);
 
-	private IQueryable<Location> ApplySorting(IQueryable<Location> query, string sortBy, bool isDescending)
-	{
-		var propertyName = typeof(Location).GetProperties()
-											.FirstOrDefault(p =>
-												string.Equals(p.Name, sortBy, StringComparison.OrdinalIgnoreCase))?
-												.Name;
+			var list = await query.Select(p => _mapper.Map<LocationDto>(p))
+								.OrderBy(l => l.City)
+								.ToListAsync(cancellationToken);
 
-		if (propertyName == null)
-		{
-			return isDescending ?
-					query.OrderByDescending(p => p.CreatedAt) :
-					query.OrderBy(p => p.CreatedAt);
+			var data = new GetAllLocationsQueryResponse
+			{
+				Items = list,
+				PageNumber = 1,
+				PageSize = list.Count,
+				TotalCount = list.Count
+			};
+
+			return Result.Success(data, "Locations retrieved successfully.");
 		}
-
-		return propertyName switch
+		catch (Exception ex)
 		{
-			nameof(Location.City) => isDescending
-				? query.OrderByDescending(p => p.City)
-				: query.OrderBy(p => p.City),
-			nameof(Location.Country) => isDescending
-				? query.OrderByDescending(p => p.Country)
-				: query.OrderBy(p => p.Country),
-			nameof(Location.CreatedAt) => isDescending
-				? query.OrderByDescending(p => p.CreatedAt)
-				: query.OrderBy(p => p.CreatedAt),
-			nameof(Location.UpdatedAt) => isDescending
-				? query.OrderByDescending(p => p.UpdatedAt)
-				: query.OrderBy(p => p.UpdatedAt),
-			_ => isDescending
-				? query.OrderByDescending(p => p.CreatedAt)
-				: query.OrderBy(p => p.CreatedAt)
-		};
+			return Result.Failure<GetAllLocationsQueryResponse>($"Failed to retrieve locations: {ex.Message}");
+		}
 	}
+
 }

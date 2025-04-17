@@ -1,4 +1,5 @@
-﻿using ClassifiedsApp.Application.Features.Commands.Ads.ChangeAdStatus;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Features.Commands.Ads.ChangeAdStatus;
 using ClassifiedsApp.Application.Features.Commands.Ads.CreateAd;
 using ClassifiedsApp.Application.Features.Commands.Ads.DeleteAd;
 using ClassifiedsApp.Application.Features.Commands.Ads.FeatureAd;
@@ -28,76 +29,68 @@ public class AdsController : ControllerBase
 
 	[HttpPost("[action]")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
-	public async Task<ActionResult<CreateAdCommandResponse>> Create([FromBody] CreateAdCommand command)
+	public async Task<ActionResult<Result>> Create([FromBody] CreateAdCommand command)
 	{
-		command.AppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!);
-
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("[action]")]
-	public async Task<ActionResult<GetAllAdsQueryResponse>> GetAll([FromBody] GetAllAdsQuery? query)
+	public async Task<ActionResult<Result<GetAllAdsQueryResponse>>> GetAll([FromBody] GetAllAdsQuery? query)
 	{
 		return Ok(await _mediator.Send(query!));
 	}
 
 	[HttpGet("[action]")]
-	public async Task<ActionResult<GetAdByIdResponse>> GetById([FromQuery] GetAdByIdQuery query)
+	public async Task<ActionResult<Result<GetAdByIdQueryResponse>>> GetById([FromQuery] GetAdByIdQuery query)
 	{
 		return Ok(await _mediator.Send(query));
 	}
 
 	[HttpGet("[action]")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
-	public async Task<ActionResult<DeleteAdCommandResponse>> Delete([FromQuery] DeleteAdCommand command)
+	public async Task<ActionResult<Result>> Delete([FromQuery] DeleteAdCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("[action]")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
-	public async Task<ActionResult<SelectAdCommandResponse>> SelectAd([FromBody] SelectAdCommand command)
+	public async Task<ActionResult<Result>> SelectAd([FromBody] SelectAdCommand command)
 	{
-		command.SelectorAppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!);
-
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("[action]")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
-	public async Task<ActionResult<UnselectAdCommandResponse>> UnselectAd([FromBody] UnselectAdCommand command)
+	public async Task<ActionResult<Result>> UnselectAd([FromBody] UnselectAdCommand command)
 	{
-		command.SelectorAppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!);
-
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("[action]")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
-	public async Task<ActionResult<UpdateAdCommandResponse>> Update([FromBody] UpdateAdCommand command)
+	public async Task<ActionResult<Result>> Update([FromBody] UpdateAdCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpGet("[action]")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
-	public async Task<ActionResult<GetFeaturedPricingQueryResponse>> GetPricingOptions()
+	public async Task<ActionResult<Result<GetFeaturedPricingQueryResponse>>> GetPricingOptions()
 	{
 		return Ok(await _mediator.Send(new GetFeaturedPricingQuery()));
 	}
 
 	[HttpPost("[action]")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,User")]
-	public async Task<ActionResult<FeatureAdCommandResponse>> FeatureAd(FeatureAdCommand command)
+	public async Task<ActionResult<Result>> FeatureAd(FeatureAdCommand command)
 	{
-		command.AppUserId = Guid.Parse(User.FindFirst("UserId")?.Value!);
-
 		return Ok(await _mediator.Send(command));
 	}
 
 	[HttpPost("[action]")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-	public async Task<ActionResult<ChangeAdStatusCommandResponse>> ChangeAdStatus([FromBody] ChangeAdStatusCommand command)
+	public async Task<ActionResult<Result>> ChangeAdStatus([FromBody] ChangeAdStatusCommand command)
 	{
 		return Ok(await _mediator.Send(command));
 	}

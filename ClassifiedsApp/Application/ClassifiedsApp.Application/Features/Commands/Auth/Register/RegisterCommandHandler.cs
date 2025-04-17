@@ -1,9 +1,10 @@
-﻿using ClassifiedsApp.Application.Interfaces.Services.Users;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Services.Users;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Auth.Register;
 
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterCommandResponse>
+public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result>
 {
 	private readonly IUserService _userService;
 
@@ -12,19 +13,18 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, RegisterC
 		_userService = userService;
 	}
 
-	public async Task<RegisterCommandResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(RegisterCommand request, CancellationToken cancellationToken)
 	{
-		if (await _userService.CreateAsync(request.CreateAppUserDto))
-			return new()
-			{
-				IsSucceeded = true,
-				Message = "User registered successfully."
-			};
-
-		return new()
+		try
 		{
-			IsSucceeded = false,
-			Message = $"User not registered."
-		};
+			if (await _userService.CreateAsync(request.CreateAppUserDto))
+				return Result.Success("User registered successfully.");
+
+			throw new Exception("User register failed.");
+		}
+		catch (Exception ex)
+		{
+			return Result.Failure($"Error occoured. {ex.Message}");
+		}
 	}
 }

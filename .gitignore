@@ -396,5 +396,21 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/ETicaretAPI/Infrastructure/ETicaretAPI.Persistence/Örnek Sorgu.txt
-/ETicaretAPI/Presentation/ETicaretAPI.API/appsettings.Production.json
+
+
+# SignalR config
+
+/ClassifiedsApp/Infrastructure/ClassifiedsApp.SignalR
+
+ChatMessage.cs
+ChatRoom.cs
+ChatMessageDto.cs
+ChatRoomDto.cs
+AdChatInfoDto.cs
+IChatHub.cs
+MarkMessagesAsReadCommand.cs
+SendMessageCommand.cs
+CreateChatRoomCommand.cs
+
+
+

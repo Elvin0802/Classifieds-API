@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using ClassifiedsApp.Application.Common.Results;
+using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Ads.UpdateAd;
 
-public class UpdateAdCommand : IRequest<UpdateAdCommandResponse>
+public class UpdateAdCommand : IRequest<Result>
 {
 	public Guid Id { get; set; }
 	public string Description { get; set; }

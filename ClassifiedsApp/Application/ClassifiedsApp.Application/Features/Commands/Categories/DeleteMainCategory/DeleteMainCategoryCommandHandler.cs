@@ -1,9 +1,10 @@
-﻿using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
+﻿using ClassifiedsApp.Application.Common.Results;
+using ClassifiedsApp.Application.Interfaces.Repositories.Categories;
 using MediatR;
 
 namespace ClassifiedsApp.Application.Features.Commands.Categories.DeleteMainCategory;
 
-public class DeleteMainCategoryCommandHandler : IRequestHandler<DeleteMainCategoryCommand, DeleteMainCategoryCommandResponse>
+public class DeleteMainCategoryCommandHandler : IRequestHandler<DeleteMainCategoryCommand, Result>
 {
 	readonly IMainCategoryWriteRepository _repository;
 
@@ -12,7 +13,7 @@ public class DeleteMainCategoryCommandHandler : IRequestHandler<DeleteMainCatego
 		_repository = repository;
 	}
 
-	public async Task<DeleteMainCategoryCommandResponse> Handle(DeleteMainCategoryCommand request, CancellationToken cancellationToken)
+	public async Task<Result> Handle(DeleteMainCategoryCommand request, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -21,19 +22,11 @@ public class DeleteMainCategoryCommandHandler : IRequestHandler<DeleteMainCatego
 
 			await _repository.SaveAsync();
 
-			return new()
-			{
-				IsSucceeded = true,
-				Message = $"Main Category deleted."
-			};
+			return Result.Success("Main Category deleted.");
 		}
 		catch (Exception ex)
 		{
-			return new()
-			{
-				IsSucceeded = false,
-				Message = $"Main Category deleting failed. {ex.Message}"
-			};
+			return Result.Failure($"Error occoured. {ex.Message}");
 		}
 	}
 }
